@@ -1,0 +1,478 @@
+service: hot-road
+# app and org for use with dashboard.serverless.com
+app: hot-road
+org: fernandodelatorre4@gmail.com
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '2'
+
+service:
+  name: serverless-todo-app
+
+plugins:
+  - serverless-webpack
+  - serverless-iam-roles-per-function
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-2'}
+
+  tracing:
+    lambda: true
+    apiGateway: true
+
+  environment:
+    USERS_TABLE: Users-${self:provider.stage}
+    TOPICS_TABLE: Topics-${self:provider.stage}
+    COMMENTS_TABLE: Comments-${self:provider.stage}
+    INDEX_NAME: TodoIdIndex
+    IMAGES_S3_BUCKET: serverless-users-pics-${self:provider.stage}
+    URL_EXPIRES: 500
+
+  iamRoleStatements:
+      - Effect: "Allow"
+        Action: 
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+
+custom:
+  dynamodb:
+    start:
+      port: 8000
+      migrate: true
+      inMemory: true
+    stages:
+      - ${self:provider.stage}
+  serverless-offline:
+    port: 3003
+    httpPort: 3003
+  serverless-iam-roles-per-function:
+    defaultInherit: true
+
+functions:
+  Auth:
+    handler: src/lambda/auth/auth0.handler
+
+  GetUser:
+    handler: src/lambda/http/userExists.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: get
+          path: user/{userId}/login
+          cors: true
+    iamRoleStatementsName: ${self:service.name}-GetUser-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+
+  RegisterUser:
+    handler: src/lambda/http/registerUser.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: post
+          path: user/{userId}/sign-up
+          cors: true
+    iamRoleStatementsName: ${self:service.name}-RegisterUser-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+
+resources:
+  Resources:
+    # GatewayResponseDefault4XX:
+    #   Type: AWS::ApiGateway::GatewayResponse
+    #   Properties:
+    #     ResponseParameters:
+    #       gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+    #       gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type, X-Amz-Date,Authorization'"
+    #       gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+
+    #     ResponseType: DEFAULT_4XX
+    #     RestApiId:
+    #       Ref: 'ApiGatewayRestApi'
+
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.USERS_TABLE}
+
+              
+# you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
+
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+#            - "/*"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+#package:
+#  patterns:
+#    - '!exclude-me.js'
+#    - '!exclude-me-dir/**'
+#    - include-me.js
+#    - include-me-dir/**
+
+functions:
+  hello:
+    handler: handler.hello
+#    The following are a few example events you can configure
+#    NOTE: Please make sure to change your handler code to work with those events
+#    Check the event documentation for details
+#    events:
+#      - httpApi:
+#          path: /users/create
+#          method: get
+#      - websocket: $connect
+#      - s3: ${env:BUCKET}
+#      - schedule: rate(10 minutes)
+#      - sns: greeter-topic
+#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
+#      - alexaSkill: amzn1.ask.skill.xx-xx-xx-xx
+#      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
+#      - iot:
+#          sql: "SELECT * FROM 'some_topic'"
+#      - cloudwatchEvent:
+#          event:
+#            source:
+#              - "aws.ec2"
+#            detail-type:
+#              - "EC2 Instance State-change Notification"
+#            detail:
+#              state:
+#                - pending
+#      - cloudwatchLog: '/aws/lambda/hello'
+#      - cognitoUserPool:
+#          pool: MyUserPool
+#          trigger: PreSignUp
+#      - alb:
+#          listenerArn: arn:aws:elasticloadbalancing:us-east-1:XXXXXX:listener/app/my-load-balancer/50dc6c495c0c9188/
+#          priority: 1
+#          conditions:
+#            host: example.com
+#            path: /hello
+
+#    Define function environment variables here
+#    environment:
+#      variable2: value2
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
+
+
+service:
+  name: serverless-todo-app
+
+plugins:
+  - serverless-webpack
+  - serverless-iam-roles-per-function
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-2'}
+
+  tracing:
+    lambda: true
+    apiGateway: true
+
+  environment:
+    TODOS_TABLE: Todos-${self:provider.stage}
+    INDEX_NAME: TodoIdIndex
+    IMAGES_S3_BUCKET: serverless-todo-imgs-${self:provider.stage}
+    URL_EXPIRES: 500
+  
+  iamRoleStatements:
+      - Effect: "Allow"
+        Action: 
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource:
+          - "*"
+
+custom:
+  dynamodb:
+    start:
+      port: 8000
+      migrate: true
+      inMemory: true
+    stages:
+      - ${self:provider.stage}
+  serverless-offline:
+    port: 3003
+    httpPort: 3003
+  serverless-iam-roles-per-function:
+    defaultInherit: true
+
+  documentation:
+    api:
+      info:
+        version: '1.0.0'
+        title: todo
+        description: todo Api
+    models:
+      - name: UpdateTodoRequest
+        contentType: "application/json"
+        schema: ${file(src/models/updateTodoRequestValidator.json)}
+      - name: CreateTodoRequest
+        contentType: "application/json"
+        schema: ${file(src/models/createTodoRequestValidator.json)}
+      - name: UpdateTodoResponse
+        contentType: "application/json"
+        schema: ${file(src/models/updateTodoResponseValidator.json)}
+      - name: CreateTodoResponse
+        contentType: "application/json"
+        schema: ${file(src/models/createTodoResponseValidator.json)}
+          
+  commonModelSchemaFragments:
+    MethodResponse400Json:
+      statusCode: '400'
+      responseModels:
+        "application/json": 400JsonResponse
+
+functions:
+
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
+
+  GetTodos:
+    handler: src/lambda/http/getTodos.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: get
+          path: todos
+          cors: true
+    iamRoleStatementsName: ${self:service.name}-GetTodos-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.INDEX_NAME}
+
+  CreateTodo:
+    handler: src/lambda/http/createTodo.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: post
+          path: todos
+          cors: true
+          reqValidatorName: 'xMyRequestValidator'
+          documentation:
+            summary: "Create new Todo"
+            description: "Create new Todo"
+            requestModels:
+              "application/json": CreateTodoRequest
+          methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": CreateTodoResponse
+              - ${self:custom.commonModelSchemaFragments.MethodResponse400Json}
+    iamRoleStatementsName: ${self:service.name}-CreateTodo-${self:provider.stage}
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+
+  UpdateTodo:
+    handler: src/lambda/http/updateTodo.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: patch
+          path: todos/{todoId}
+          cors: true
+          reqValidatorName: 'xMyRequestValidator'
+          documentation:
+            summary: "update new Todo"
+            description: "update new Todo"
+            requestModels:
+              "application/json": UpdateTodoRequest
+          methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": UpdateTodoResponse
+              - ${self:custom.commonModelSchemaFragments.MethodResponse400Json}
+    iamRoleStatementsName: ${self:service.name}-UpdateTodo-${self:provider.stage}
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:UpdateItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+
+  DeleteTodo:
+    handler: src/lambda/http/deleteTodo.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: delete
+          path: todos/{todoId}
+          cors: true
+    iamRoleStatementsName: ${self:service.name}-DeleteTodo-${self:provider.stage}
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DeleteItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+
+  GenerateUploadUrl:
+    handler: src/lambda/http/generateUploadUrl.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: post
+          path: todos/{todoId}/attachment
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+        Resource: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*
+
+resources:
+  Resources:
+    # GatewayResponseDefault4XX:
+    #   Type: AWS::ApiGateway::GatewayResponse
+    #   Properties:
+    #     ResponseParameters:
+    #       gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+    #       gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type, X-Amz-Date,Authorization'"
+    #       gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+
+    #     ResponseType: DEFAULT_4XX
+    #     RestApiId:
+    #       Ref: 'ApiGatewayRestApi'
+
+    TodosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: todoId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: todoId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.TODOS_TABLE}
+        LocalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.INDEX_NAME}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL # What attributes will be copied to an index
+
+    AttachmentsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.IMAGES_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+    
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 
+                - s3:PutObject
+                - s3:GetObject
+              Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
+        Bucket: !Ref AttachmentsBucket
+
+    xMyRequestValidator:  
+      Type: "AWS::ApiGateway::RequestValidator"
+      Properties:
+        Name: 'my-req-validator'
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false  
