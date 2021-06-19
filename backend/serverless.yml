@@ -85,7 +85,6 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
-          # - dynamodb:Query
           - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
 
@@ -95,7 +94,7 @@ functions:
       - http:
           authorizer: Auth
           method: post
-          path: hotroad/create-topic
+          path: hotroad/topic/create
           cors: true
     iamRoleStatementsName: ${self:service.name}-CreateTopic-${self:provider.stage}
     iamRoleStatements:
@@ -103,6 +102,32 @@ functions:
         Action:
           - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+        
+  DeleteTopic:
+    handler: src/lambda/http/deleteTopic.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: post
+          path: hotroad/topic/{topicId}/delete
+          cors: true
+    iamRoleStatementsName: ${self:service.name}-DeleteTopic-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
+
 
 
 resources:
@@ -137,15 +162,15 @@ resources:
         AttributeDefinitions:
           - AttributeName: topicId
             AttributeType: S
-          - AttributeName: createdAt
-            AttributeType: S
+          # - AttributeName: createdAt
+          #   AttributeType: S
           - AttributeName: userId
             AttributeType: S
         KeySchema:
           - AttributeName: topicId
             KeyType: HASH
-          - AttributeName: createdAt
-            KeyType: RANGE
+          # - AttributeName: createdAt
+          #   KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.TOPICS_TABLE}
         GlobalSecondaryIndexes:

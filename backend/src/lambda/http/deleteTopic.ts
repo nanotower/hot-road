@@ -7,8 +7,8 @@ import 'source-map-support/register';
 
 import { getUserId } from '../../utils/getUserId';
 import { createLogger } from '../../utils/logger';
-const logger = createLogger('CreateTopicLambda');
-import { createNewTopic } from '../../businessLogic/Topics';
+const logger = createLogger('DeleteTopicLambda');
+import { deleteTopic } from '../../businessLogic/Topics';
 import { adjustUsersTopic } from '../../businessLogic/Users';
 
 export const handler: APIGatewayProxyHandler = async (
@@ -16,32 +16,33 @@ export const handler: APIGatewayProxyHandler = async (
 ): Promise<APIGatewayProxyResult> => {
   logger.info('Processing event', event);
   const userId = getUserId(event);
-  const parsedBody = JSON.parse(event.body);
+  const topicInRequest = event.pathParameters.topicId;
 
-  let newItem, updatedUser
+  let deletedItem, updatedUser;
+
   try {
-    newItem = await createNewTopic(parsedBody, userId);
-    updatedUser = await adjustUsersTopic(userId, 'addComment')
-    logger.info('updateUser', {updatedUser})
+    deletedItem = await deleteTopic(topicInRequest);
+    // TODO remove comments of table
+    updatedUser = await adjustUsersTopic(userId, 'substractComment');
+    logger.info('updatedUser', { deletedItem, updatedUser });
   } catch (error) {
-    logger.error('error', {error})
+    logger.error(error);
     return {
       statusCode: 500,
       body: JSON.stringify({
-        error: 'Cannot perform request'
-      })
-    }
+        error: 'Cannot perform request',
+      }),
+    };
   }
-  
+
   return {
-    statusCode: 201,
+    statusCode: 202,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Credentials': true,
     },
     body: JSON.stringify({
-      newItem,
-      updatedUser
+      deletedItem,
     }),
   };
 };

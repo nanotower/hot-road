@@ -9,6 +9,7 @@ import DbClient from './DbClient'
 import { UserItem } from '../interfaces/UserItem'
 
 import { createLogger } from '../utils/logger'
+import { String } from 'aws-sdk/clients/appstream'
 const logger = createLogger('UsersData')
 
 export class UsersData extends DbClient {
@@ -23,9 +24,8 @@ export class UsersData extends DbClient {
   }
 
   async getUser(userId: string): Promise<UserItem> {
-    const teststr = super.testVal
-    logger.info('Getting user', {userId, teststr})
-    const user = await super.docClient
+    logger.info('Getting user', {userId})
+    const user = await this.docClient
     .get({
       TableName: this.usersTable,
       Key: {
@@ -38,7 +38,8 @@ export class UsersData extends DbClient {
   }
 
   async registerUser(user: UserItem): Promise<UserItem> {
-    await super.docClient
+    logger.info('Registering user', {user})
+    await this.docClient
     .put({
       TableName: this.usersTable,
       Item: user
@@ -47,6 +48,40 @@ export class UsersData extends DbClient {
 
     return user as UserItem
   }
+
+  async adjustUsersTopic(userId: string, operation: String): Promise<any> {
+    logger.info('Adjust topic of user', {userId, operation})
+    
+    const user = await this.getUser(userId)
+
+    let totalTopicsInUser
+
+    if (operation === 'addComment') {
+      totalTopicsInUser = user.topics + 1
+    }
+    else if (operation === 'substractComment'){
+      totalTopicsInUser = user.topics - 1
+    }
+
+    const userUpdated = await this.docClient.update({
+      TableName: this.usersTable,
+      Key: {
+        userId
+      },
+      UpdateExpression: 'set #topics = :t',
+      ExpressionAttributeValues: {
+        ':t': totalTopicsInUser
+      },
+      ExpressionAttributeNames: {
+        '#topics': 'topics'
+      },
+      ReturnValues:"UPDATED_NEW"
+    }).promise();
+
+    return userUpdated
+  }
+
+  
   
 //   export async function createGroup(
 //     createGroupRequest: CreateGroupRequest,

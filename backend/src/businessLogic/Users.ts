@@ -30,3 +30,9 @@ export const registerUser = async (
   const userCreated = await usersData.registerUser(user);
   return userCreated;
 };
+
+export const adjustUsersTopic = async (userId: string, operation: string) => {
+  logger.info('Event', {userId})
+  const updatedUser = await usersData.adjustUsersTopic(userId, operation)
+  return updatedUser
+}

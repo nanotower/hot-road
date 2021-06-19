@@ -10,7 +10,6 @@ export default class DbClient {
       protected readonly testVal: string = 'testString',
     ) {}
 }
-// TODO check inheritance TS
 
 function createDynamoDBClient() {
     if (process.env.IS_OFFLINE) {

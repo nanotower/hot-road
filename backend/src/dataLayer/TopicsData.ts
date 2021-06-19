@@ -21,16 +21,27 @@ export class TopicsData extends DbClient {
 
   async createNewTopic(topic: Topic): Promise<Topic> {
     logger.info('creating topic', {topic})
-    await super.docClient
+    await this.docClient
     .put({
       TableName: this.topicsTable,
       Item: {
-        topic
+        ...topic
       }
     })
     .promise()
 
     return topic
+  }
+
+  async deleteTopic(topicId: string) {
+    logger.info('delete topic', {topicId})
+    await this.docClient
+    .delete({
+      TableName: this.topicsTable,
+      Key: {
+        topicId
+      }
+    }).promise();
   }
 
   // async registerUser(user: UserItem): Promise<UserItem> {

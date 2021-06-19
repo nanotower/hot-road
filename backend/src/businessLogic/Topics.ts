@@ -8,7 +8,7 @@ import { createLogger } from '../utils/logger'
 const logger = createLogger('TopicsLogic')
 
 export const createNewTopic = async (newTopicRequest: NewTopicRequest, userId: string) => {
-    logger.info('Event', {newTopicRequest, userId})
+    logger.info('Create New Topic', {newTopicRequest, userId})
     
     const createdAt = new Date().toISOString();
     const topicId = uuid.v4()
@@ -22,4 +22,10 @@ export const createNewTopic = async (newTopicRequest: NewTopicRequest, userId: s
     }
     logger.info('NewTopic', {newTopic})
     return await topicData.createNewTopic(newTopic)
+}
+
+export const deleteTopic = async (topicId: string) => {
+    logger.info('Delete Topic', {topicId}) 
+    await topicData.deleteTopic(topicId)
+    return {}
 }
