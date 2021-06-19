@@ -3,50 +3,46 @@
 // import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 // const XAWS = AWSXRay.captureAWS(AWS)
-
 import DbClient from './DbClient'
 
-import { UserItem } from '../interfaces/UserItem'
+import { Topic } from '../interfaces/Topic'
 
 import { createLogger } from '../utils/logger'
-const logger = createLogger('UsersData')
+const logger = createLogger('TopicsData')
 
-export class UsersData extends DbClient {
+export class TopicsData extends DbClient {
   constructor(
-    // private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly usersTable = process.env.USERS_TABLE
+    private readonly topicsTable = process.env.TOPICS_TABLE,
     // private readonly index = process.env.INDEX_NAME,
     // private readonly bucketName = process.env.IMAGES_S3_BUCKET
-    ) {
+  ) {
     super()
-      
   }
 
-  async getUser(userId: string): Promise<UserItem> {
-    const teststr = super.testVal
-    logger.info('Getting user', {userId, teststr})
-    const user = await super.docClient
-    .get({
-      TableName: this.usersTable,
-      Key: {
-          userId
+  async createNewTopic(topic: Topic): Promise<Topic> {
+    logger.info('creating topic', {topic})
+    await super.docClient
+    .put({
+      TableName: this.topicsTable,
+      Item: {
+        topic
       }
     })
     .promise()
 
-    return user.Item as UserItem
+    return topic
   }
 
-  async registerUser(user: UserItem): Promise<UserItem> {
-    await super.docClient
-    .put({
-      TableName: this.usersTable,
-      Item: user
-    })
-    .promise()
+  // async registerUser(user: UserItem): Promise<UserItem> {
+  //   await this.docClient
+  //   .put({
+  //     TableName: this.usersTable,
+  //     Item: user
+  //   })
+  //   .promise()
 
-    return user as UserItem
-  }
+  //   return user as UserItem
+  // }
   
 //   export async function createGroup(
 //     createGroupRequest: CreateGroupRequest,

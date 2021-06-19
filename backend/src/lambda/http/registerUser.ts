@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import 'source-map-support/register'
 
-import { getUser, registerUser } from '../../businessLogic/Users'
+import { registerUser } from '../../businessLogic/Users'
 import { getUserId } from '../../utils/getUserId'
 import { NewUserRequest } from '../../interfaces/NewUserRequest'
 
