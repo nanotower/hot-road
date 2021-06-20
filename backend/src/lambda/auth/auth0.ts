@@ -4,8 +4,8 @@ import 'source-map-support/register'
 import { verify, decode } from 'jsonwebtoken'
 import { createLogger } from '../../utils/logger'
 import Axios from 'axios'
-import { Jwt } from '../../auth/Jwt'
-import { JwtPayload } from '../../auth/JwtPayload'
+import { Jwt } from '../../interfaces/Jwt'
+import { JwtPayload } from '../../interfaces/JwtPayload'
 
 const logger = createLogger('auth')
 

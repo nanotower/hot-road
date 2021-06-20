@@ -20,7 +20,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     return {
       statusCode: 404,
       body: JSON.stringify({
-        error: 'Group does not exist'
+        error: 'User does not exist'
       })
     }
   }

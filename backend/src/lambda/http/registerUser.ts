@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import 'source-map-support/register'
 
-import { getUser, registerUser } from '../../businessLogic/Users'
+import { registerUser } from '../../businessLogic/Users'
 import { getUserId } from '../../utils/getUserId'
 import { NewUserRequest } from '../../interfaces/NewUserRequest'
 
@@ -21,7 +21,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   }
 
   return {
-    statusCode: 200,
+    statusCode: 201,
     headers: {
       'Access-Control-Allow-Origin': '*'
     },

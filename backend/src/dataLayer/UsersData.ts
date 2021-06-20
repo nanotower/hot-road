@@ -1,24 +1,30 @@
-import * as AWS from 'aws-sdk'
-import * as AWSXRay from 'aws-xray-sdk'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+// import * as AWS from 'aws-sdk'
+// import * as AWSXRay from 'aws-xray-sdk'
+// import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-const XAWS = AWSXRay.captureAWS(AWS)
+// const XAWS = AWSXRay.captureAWS(AWS)
+
+import DbClient from './DbClient'
 
 import { UserItem } from '../interfaces/UserItem'
-// import { TodoUpdate } from '../../models/TodoUpdate'
 
-// import { createLogger } from '../../utils/logger'
-// const logger = createLogger('UsersData')
+import { createLogger } from '../utils/logger'
+import { String } from 'aws-sdk/clients/appstream'
+const logger = createLogger('Users-Data')
 
-export class UsersData {
+export class UsersData extends DbClient {
   constructor(
-    private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly usersTable = process.env.USERS_TABLE,
+    // private readonly docClient: DocumentClient = createDynamoDBClient(),
+    private readonly usersTable = process.env.USERS_TABLE
     // private readonly index = process.env.INDEX_NAME,
     // private readonly bucketName = process.env.IMAGES_S3_BUCKET
-  ) {}
+    ) {
+    super()
+      
+  }
 
   async getUser(userId: string): Promise<UserItem> {
+    logger.info('Getting user', {userId})
     const user = await this.docClient
     .get({
       TableName: this.usersTable,
@@ -32,6 +38,7 @@ export class UsersData {
   }
 
   async registerUser(user: UserItem): Promise<UserItem> {
+    logger.info('Registering user', {user})
     await this.docClient
     .put({
       TableName: this.usersTable,
@@ -41,6 +48,40 @@ export class UsersData {
 
     return user as UserItem
   }
+
+  async adjustUsersTopic(userId: string, operation: String): Promise<any> {
+    logger.info('Adjust topic of user', {userId, operation})
+    
+    const user = await this.getUser(userId)
+
+    let totalTopicsInUser
+
+    if (operation === 'addComment') {
+      totalTopicsInUser = user.topics + 1
+    }
+    else if (operation === 'substractComment'){
+      totalTopicsInUser = user.topics - 1
+    }
+
+    const userUpdated = await this.docClient.update({
+      TableName: this.usersTable,
+      Key: {
+        userId
+      },
+      UpdateExpression: 'set #topics = :t',
+      ExpressionAttributeValues: {
+        ':t': totalTopicsInUser
+      },
+      ExpressionAttributeNames: {
+        '#topics': 'topics'
+      },
+      ReturnValues:"UPDATED_NEW"
+    }).promise();
+
+    return userUpdated
+  }
+
+  
   
 //   export async function createGroup(
 //     createGroupRequest: CreateGroupRequest,
@@ -126,14 +167,14 @@ export class UsersData {
 //   }
 }
 
-function createDynamoDBClient() {
-  if (process.env.IS_OFFLINE) {
-    console.log('Creating a local DynamoDB instance')
-    return new XAWS.DynamoDB.DocumentClient({
-      region: 'localhost',
-      endpoint: 'http://localhost:8000'
-    })
-  }
+// function createDynamoDBClient() {
+//   if (process.env.IS_OFFLINE) {
+//     console.log('Creating a local DynamoDB instance')
+//     return new XAWS.DynamoDB.DocumentClient({
+//       region: 'localhost',
+//       endpoint: 'http://localhost:8000'
+//     })
+//   }
 
-  return new XAWS.DynamoDB.DocumentClient()
-}
+//   return new XAWS.DynamoDB.DocumentClient()
+// }
