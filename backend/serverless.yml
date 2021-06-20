@@ -130,6 +130,21 @@ functions:
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
 
+  GetTopics:
+    handler: src/lambda/http/getTopics.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: get
+          path: hotroad/topic/all
+          cors: true
+    iamRoleStatementsName: ${self:service.name}-GetTopics-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}
+
   CreateComment:
     handler: src/lambda/http/createComment.handler
     events:

@@ -95,6 +95,15 @@ export class TopicsData extends DbClient {
     return topicUpdated
   }
 
+  async getTopics(): Promise<TopicItem[]> {
+    const items = await this.docClient.scan({
+      TableName: this.topicsTable
+    }).promise()
+    logger.info('getTopics', { items });
+
+    return items.Items as TopicItem[]
+  }
+
   // async registerUser(user: UserItem): Promise<UserItem> {
   //   await this.docClient
   //   .put({
