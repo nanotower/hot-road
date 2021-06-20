@@ -5,7 +5,7 @@ import { TopicsData } from "../dataLayer/TopicsData";
 const topicData = new TopicsData()
 
 import { createLogger } from '../utils/logger'
-const logger = createLogger('TopicsLogic')
+const logger = createLogger('Topics-Logic')
 
 export const createNewTopic = async (newTopicRequest: NewTopicRequest, userId: string) => {
     logger.info('Create New Topic', {newTopicRequest, userId})
@@ -28,4 +28,11 @@ export const deleteTopic = async (topicId: string) => {
     logger.info('Delete Topic', {topicId}) 
     await topicData.deleteTopic(topicId)
     return {}
+}
+
+export const adjustTopicComment = async (topicId: string, operation: string) => {
+    logger.info('adjust Topic Comment', {topicId})
+
+    const adjustedTopicComment = await topicData.adjustTopicComment(topicId, operation)
+    return adjustedTopicComment
 }

@@ -10,7 +10,7 @@ import { UserItem } from '../interfaces/UserItem'
 
 import { createLogger } from '../utils/logger'
 import { String } from 'aws-sdk/clients/appstream'
-const logger = createLogger('UsersData')
+const logger = createLogger('Users-Data')
 
 export class UsersData extends DbClient {
   constructor(

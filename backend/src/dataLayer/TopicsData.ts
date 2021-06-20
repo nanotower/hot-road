@@ -5,10 +5,10 @@
 // const XAWS = AWSXRay.captureAWS(AWS)
 import DbClient from './DbClient';
 
-import { Topic } from '../interfaces/Topic';
+import { TopicItem } from '../interfaces/TopicItem';
 
 import { createLogger } from '../utils/logger';
-const logger = createLogger('TopicsData');
+const logger = createLogger('Topics-Data');
 
 export class TopicsData extends DbClient {
   constructor(
@@ -19,7 +19,7 @@ export class TopicsData extends DbClient {
     super();
   }
 
-  async createNewTopic(topic: Topic): Promise<Topic> {
+  async createNewTopic(topic: TopicItem): Promise<TopicItem> {
     logger.info('creating topic', { topic });
     await this.docClient
       .put({
@@ -46,6 +46,53 @@ export class TopicsData extends DbClient {
         (err, data) => logger.info('res', { err, data })
       )
       .promise();
+  }
+
+  async getTopic(topicId: string): Promise<TopicItem> {
+    logger.info('get Topic', { topicId });
+    const topic = await this.docClient
+    .get({
+      TableName: this.topicsTable,
+      Key: {
+        topicId
+      }
+    })
+    .promise()
+
+    return topic.Item as TopicItem
+  }
+  async adjustTopicComment(topicId: string, operation: String) {
+    logger.info('adjust Topic Comment', { topicId });
+    
+    const topic: TopicItem = await this.getTopic(topicId)
+    logger.info('topic', { topic });
+
+    let totalCommentsInTopic = topic.comments
+
+    if (operation === 'addComment') {
+      totalCommentsInTopic += 1
+    }
+    else if (operation === 'substractComment'){
+      totalCommentsInTopic -= 1
+    }
+    logger.info('totalCommentsInTopic', { totalCommentsInTopic });
+
+    const topicUpdated = await this.docClient.update({
+      TableName: this.topicsTable,
+      Key: {
+        topicId
+      },
+      UpdateExpression: 'set #comments = :c',
+      ExpressionAttributeValues: {
+        ':c': totalCommentsInTopic
+      },
+      ExpressionAttributeNames: {
+        '#comments': 'comments'
+      },
+      ReturnValues:"UPDATED_NEW"
+    }).promise();
+
+    return topicUpdated
   }
 
   // async registerUser(user: UserItem): Promise<UserItem> {
