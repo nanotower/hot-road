@@ -1,9 +1,3 @@
-// import * as AWS from 'aws-sdk'
-// import * as AWSXRay from 'aws-xray-sdk'
-// import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-
-// const XAWS = AWSXRay.captureAWS(AWS)
-
 import DbClient from './DbClient'
 
 import { UserItem } from '../interfaces/UserItem'

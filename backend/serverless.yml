@@ -29,7 +29,6 @@ provider:
     COMMENTS_TABLE: Comments-${self:provider.stage}
     USER_ID_INDEX: userIdIndex
     TOPIC_ID_INDEX: topicIdIndex
-    INDEX_NAME: TodoIdIndex
     IMAGES_S3_BUCKET: serverless-users-pics-${self:provider.stage}
     URL_EXPIRES: 500
 
@@ -130,6 +129,21 @@ functions:
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
 
+  GetTopics:
+    handler: src/lambda/http/getTopics.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: get
+          path: hotroad/topic/all
+          cors: true
+    iamRoleStatementsName: ${self:service.name}-GetTopics-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}
+
   CreateComment:
     handler: src/lambda/http/createComment.handler
     events:
@@ -150,6 +164,24 @@ functions:
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}
 
+  GetComments:
+    handler: src/lambda/http/getComments.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: get
+          path: hotroad/topic/{topicId}/comments
+          cors: true
+    iamRoleStatementsName: ${self:service.name}-GetComments-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.COMMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.COMMENTS_TABLE}/index/${self:provider.environment.TOPIC_ID_INDEX}
 
 
 resources:
@@ -227,6 +259,8 @@ resources:
               KeyType: HASH
             Projection:
               ProjectionType: ALL
+
+    
 
               
 # you can overwrite defaults here

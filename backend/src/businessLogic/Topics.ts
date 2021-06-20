@@ -1,8 +1,10 @@
-import { NewTopicRequest } from "../interfaces/NewTopicRequest";
+import { NewTopicRequest } from "../interfaces/NewTopicRequest"
 import * as uuid from 'uuid'
 
-import { TopicsData } from "../dataLayer/TopicsData";
+import { TopicsData } from "../dataLayer/TopicsData"
 const topicData = new TopicsData()
+
+import { TopicItem } from "../interfaces/TopicItem"
 
 import { createLogger } from '../utils/logger'
 const logger = createLogger('Topics-Logic')
@@ -10,7 +12,7 @@ const logger = createLogger('Topics-Logic')
 export const createNewTopic = async (newTopicRequest: NewTopicRequest, userId: string) => {
     logger.info('Create New Topic', {newTopicRequest, userId})
     
-    const createdAt = new Date().toISOString();
+    const createdAt = new Date().toISOString()
     const topicId = uuid.v4()
     
     const newTopic = {
@@ -35,4 +37,11 @@ export const adjustTopicComment = async (topicId: string, operation: string) => 
 
     const adjustedTopicComment = await topicData.adjustTopicComment(topicId, operation)
     return adjustedTopicComment
+}
+
+export const getTopics = async (): Promise<TopicItem[]> => {
+    const topics = await topicData.getTopics()
+    logger.info('getTopics', {topics})
+
+    return topics
 }
