@@ -1,26 +1,20 @@
-// import * as AWS from 'aws-sdk'
-// import * as AWSXRay from 'aws-xray-sdk'
-// import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import DbClient from './DbClient'
 
-// const XAWS = AWSXRay.captureAWS(AWS)
-import DbClient from './DbClient';
+import { TopicItem } from '../interfaces/TopicItem'
 
-import { TopicItem } from '../interfaces/TopicItem';
-
-import { createLogger } from '../utils/logger';
+import { createLogger } from '../utils/logger'
 const logger = createLogger('Topics-Data');
 
 export class TopicsData extends DbClient {
   constructor(
     private readonly topicsTable = process.env.TOPICS_TABLE
-  ) // private readonly index = process.env.INDEX_NAME,
-  // private readonly bucketName = process.env.IMAGES_S3_BUCKET
+  ) 
   {
-    super();
+    super()
   }
 
   async createNewTopic(topic: TopicItem): Promise<TopicItem> {
-    logger.info('creating topic', { topic });
+    logger.info('creating topic', { topic })
     await this.docClient
       .put({
         TableName: this.topicsTable,
@@ -28,13 +22,13 @@ export class TopicsData extends DbClient {
           ...topic,
         },
       })
-      .promise();
+      .promise()
 
-    return topic;
+    return topic
   }
 
   async deleteTopic(topicId: string) {
-    logger.info('delete topic', { topicId });
+    logger.info('delete topic', { topicId })
     await this.docClient
       .delete(
         {
@@ -45,11 +39,11 @@ export class TopicsData extends DbClient {
         },
         (err, data) => logger.info('res', { err, data })
       )
-      .promise();
+      .promise()
   }
 
   async getTopic(topicId: string): Promise<TopicItem> {
-    logger.info('get Topic', { topicId });
+    logger.info('get Topic', { topicId })
     const topic = await this.docClient
     .get({
       TableName: this.topicsTable,
@@ -62,10 +56,10 @@ export class TopicsData extends DbClient {
     return topic.Item as TopicItem
   }
   async adjustTopicComment(topicId: string, operation: String) {
-    logger.info('adjust Topic Comment', { topicId });
+    logger.info('adjust Topic Comment', { topicId })
     
     const topic: TopicItem = await this.getTopic(topicId)
-    logger.info('topic', { topic });
+    logger.info('topic', { topic })
 
     let totalCommentsInTopic = topic.comments
 
@@ -75,7 +69,7 @@ export class TopicsData extends DbClient {
     else if (operation === 'substractComment'){
       totalCommentsInTopic -= 1
     }
-    logger.info('totalCommentsInTopic', { totalCommentsInTopic });
+    logger.info('totalCommentsInTopic', { totalCommentsInTopic })
 
     const topicUpdated = await this.docClient.update({
       TableName: this.topicsTable,
@@ -99,7 +93,7 @@ export class TopicsData extends DbClient {
     const items = await this.docClient.scan({
       TableName: this.topicsTable
     }).promise()
-    logger.info('getTopics', { items });
+    logger.info('getTopics', { items })
 
     return items.Items as TopicItem[]
   }

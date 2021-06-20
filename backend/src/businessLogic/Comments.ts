@@ -1,19 +1,19 @@
 import * as uuid from 'uuid';
 
+import { CommentItem } from '../interfaces/CommentItem'
+
 import {CommentsData} from '../dataLayer/CommentsData'
-// import { TopicsData } from '../dataLayer/TopicsData';
-
 const commentsData = new CommentsData
-// const topicsData = new TopicsData
 
-import { createLogger } from '../utils/logger';
-const logger = createLogger('Comments-Logic');
+
+import { createLogger } from '../utils/logger'
+const logger = createLogger('Comments-Logic')
 
 export const createNewComment = async (userId: string, topicId: string, content: string, authorObj: object) => {
   logger.info('create Comment', {userId , topicId , content, authorObj})
-  const createdAt: string = new Date().toISOString();
-  const commentId: string = uuid.v4();
-  const author: string = JSON.stringify(authorObj);
+  const createdAt: string = new Date().toISOString()
+  const commentId: string = uuid.v4()
+  const author: string = JSON.stringify(authorObj)
 
   const newComment = {
     topicId,
@@ -32,3 +32,8 @@ export const createNewComment = async (userId: string, topicId: string, content:
 
   return commentCreated
 };
+
+export const getCommentsFromTopic = async(topicId: string): Promise<CommentItem[]> => {
+  logger.info('get Comments From Topic', {topicId})
+  return await commentsData.getCommentsFromTopic(topicId)
+}

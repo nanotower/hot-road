@@ -2,22 +2,22 @@ import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } f
 import 'source-map-support/register'
 
 import { createLogger } from '../../utils/logger';
-const logger = createLogger('Get-Topics-Lambda');
+const logger = createLogger('Get-Comments-Lambda');
 
-import { TopicItem } from '../../interfaces/TopicItem';
-import {getTopics} from '../../businessLogic/Topics'
+// import { CommentItem } from '../../interfaces/CommentItem';
+import { getCommentsFromTopic } from '../../businessLogic/Comments'
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  logger.info('Processing event getTopics: ', event)
-
-  const topics:TopicItem[] = await getTopics()
-  logger.info('topics query res: ', {topics, isTopic: !!!topics})
+  logger.info('Processing event get comments', event)
+  const topicId = event.pathParameters.topicId;
+  const comments = await getCommentsFromTopic(topicId)
+  logger.info('comments query res: ', {topicId, comments})
   
-  if (!!!topics) {
+  if (!!!comments) {
     return {
       statusCode: 200,
       body: JSON.stringify({
-        msg: 'There are no topics'
+        msg: 'There are no comments in this comment'
       })
     }
   }
@@ -28,7 +28,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       'Access-Control-Allow-Origin': '*'
     },
     body: JSON.stringify({
-        topics
+        comments
     })
   }
 }
