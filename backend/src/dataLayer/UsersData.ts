@@ -8,10 +8,8 @@ const logger = createLogger('Users-Data')
 
 export class UsersData extends DbClient {
   constructor(
-    // private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly usersTable = process.env.USERS_TABLE
-    // private readonly index = process.env.INDEX_NAME,
-    // private readonly bucketName = process.env.IMAGES_S3_BUCKET
+    private readonly usersTable = process.env.USERS_TABLE,
+    private readonly bucketName = process.env.IMAGES_S3_BUCKET
     ) {
     super()
       
@@ -33,10 +31,12 @@ export class UsersData extends DbClient {
 
   async registerUser(user: UserItem): Promise<UserItem> {
     logger.info('Registering user', {user})
+    const attachmentUrl = `https://${this.bucketName}.s3.amazonaws.com/${user.userId}`
+
     await this.docClient
     .put({
       TableName: this.usersTable,
-      Item: user
+      Item: {...user, attachmentUrl}
     })
     .promise()
 

@@ -22,12 +22,14 @@ export const registerUser = async (
   logger.info('register User', {userId, newUserRequest})
   const createdAt = new Date().toISOString()
   const topics = 0
+  const attachmentUrl = ''
   
   const user = {
     userId,
     ...newUserRequest,
     topics,
-    createdAt
+    createdAt,
+    attachmentUrl,
   }
   logger.info('User', {user})
   const userCreated = await usersData.registerUser(user)
