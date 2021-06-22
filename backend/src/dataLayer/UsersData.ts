@@ -31,16 +31,18 @@ export class UsersData extends DbClient {
 
   async registerUser(user: UserItem): Promise<UserItem> {
     logger.info('Registering user', {user})
+    
     const attachmentUrl = `https://${this.bucketName}.s3.amazonaws.com/${user.userId}`
+    const registeredUser = {...user, attachmentUrl}
 
     await this.docClient
     .put({
       TableName: this.usersTable,
-      Item: {...user, attachmentUrl}
+      Item: registeredUser
     })
     .promise()
 
-    return user as UserItem
+    return registeredUser as UserItem
   }
 
   async adjustUsersTopic(userId: string, operation: String): Promise<any> {

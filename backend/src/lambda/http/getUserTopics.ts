@@ -2,31 +2,17 @@ import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } f
 import 'source-map-support/register'
 
 import { createLogger } from '../../utils/logger';
-const logger = createLogger('Get-User');
+const logger = createLogger('Get-User-Topics-Lambda');
 
-import { getUser } from '../../businessLogic/Users'
 import { getUserId } from '../../utils/getUserId'
+import { TopicItem } from '../../interfaces/TopicItem'
+import { getUserTopics } from '../../businessLogic/Topics'
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info('Processing event getuser', event)
 
   const userId = getUserId(event)
-  let userInDb: any
-  try {
-    userInDb = await getUser(userId)
-    console.log('result: ', userId, userInDb) 
-  } catch (error) {
-    console.error(error)
-  }
-  
-  if (!userInDb) {
-    return {
-      statusCode: 404,
-      body: JSON.stringify({
-        error: 'User does not exist'
-      })
-    }
-  }
+  const userTopics: TopicItem[] = await getUserTopics(userId)
 
   return {
     statusCode: 200,
@@ -34,7 +20,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       'Access-Control-Allow-Origin': '*'
     },
     body: JSON.stringify({
-        userInDb
+        userTopics
     })
   }
 }

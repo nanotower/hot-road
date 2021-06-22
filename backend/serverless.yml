@@ -189,7 +189,7 @@ functions:
       - http:
           authorizer: Auth
           method: post
-          path: user/{userId}/attachment
+          path: hotroad/user/{userId}/attachment
           cors: true
     iamRoleStatements:
       - Effect: Allow
@@ -197,6 +197,25 @@ functions:
           - s3:PutObject
           - s3:GetObject
         Resource: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*
+
+  GetUserTopics:
+    handler: src/lambda/http/getUserTopics.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: get
+          path: hotroad/user/topics
+          cors: true
+    iamRoleStatementsName: ${self:service.name}-GetUserTopics-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}/index/${self:provider.environment.USER_ID_INDEX}
 
 resources:
   Resources:
@@ -274,6 +293,40 @@ resources:
             Projection:
               ProjectionType: ALL
 
+    AttachmentsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.IMAGES_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 10000
+    
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 
+                - s3:PutObject
+                - s3:GetObject
+              Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
+        Bucket: !Ref AttachmentsBucket
     
 
               

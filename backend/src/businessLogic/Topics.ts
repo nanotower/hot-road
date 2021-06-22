@@ -45,3 +45,8 @@ export const getTopics = async (): Promise<TopicItem[]> => {
 
     return topics
 }
+
+export const getUserTopics = async (userId): Promise<TopicItem[]> => {
+    logger.info('getUserTopics', {userId})
+    return await topicData.getUserTopics(userId)
+}

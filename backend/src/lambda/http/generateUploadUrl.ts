@@ -6,10 +6,10 @@ import { createLogger } from '../../utils/logger'
 const logger = createLogger('GenerateURl')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  const todoId = event.pathParameters.todoId
-  logger.info('Event generateURL', {todoId})
+  const userId = event.pathParameters.userId
+  logger.info('Event generateURL', {userId})
   
-  const signedUrl = await generateUrl(todoId)
+  const signedUrl = await generateUrl(userId)
   return {
     statusCode: 202,
     headers: {
