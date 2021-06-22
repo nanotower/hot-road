@@ -7,7 +7,8 @@ const logger = createLogger('Topics-Data');
 
 export class TopicsData extends DbClient {
   constructor(
-    private readonly topicsTable = process.env.TOPICS_TABLE
+    private readonly topicsTable = process.env.TOPICS_TABLE,
+    private readonly userIndex = process.env.USER_ID_INDEX
   ) 
   {
     super()
@@ -96,6 +97,22 @@ export class TopicsData extends DbClient {
     logger.info('getTopics', { items })
 
     return items.Items as TopicItem[]
+  }
+
+  async getUserTopics(userId: string): Promise<TopicItem[]> {
+    logger.info('getUserTopics', { userId })
+
+    const todosList = await this.docClient
+        .query({
+          TableName: this.topicsTable,
+          IndexName: this.userIndex,
+          KeyConditionExpression: 'userId = :userId',
+          ExpressionAttributeValues: {
+            ':userId': userId
+          }
+        })
+        .promise()
+    return todosList.Items as TopicItem[]
   }
 
   // async registerUser(user: UserItem): Promise<UserItem> {

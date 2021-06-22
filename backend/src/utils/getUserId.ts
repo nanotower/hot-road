@@ -13,6 +13,15 @@ function parseUserId(jwtToken: string): string {
   return decodedJwt.sub
 }
 
+/**
+ * Parse a Oauth id and return formatted id
+ * @param id Id to parse
+ * @returns a user id with only numbers
+ */
+function formatUserId(id: string): string {
+  return id.split("|")[1]
+}
+
 
 /**
  * Get a user id from an API Gateway event
@@ -25,5 +34,6 @@ export function getUserId(event: APIGatewayProxyEvent): string {
   const split = authorization.split(' ')
   const jwtToken = split[1]
 
-  return parseUserId(jwtToken)
+  const id = parseUserId(jwtToken)
+  return formatUserId(id)
 }
