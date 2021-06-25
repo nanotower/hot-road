@@ -8,8 +8,6 @@ import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
 import { Todos } from './components/Todos'
 
-export interface AppProps {}
-
 export interface AppProps {
   auth: Auth
   history: any
@@ -89,6 +87,14 @@ export default class App extends Component<AppProps, AppState> {
     return (
       <Switch>
         <Route
+          path="/register"
+          exact
+          render={props => {
+            return <Register {...props} auth={this.props.auth} />
+          }}
+        />
+
+        <Route
           path="/"
           exact
           render={props => {
@@ -103,6 +109,8 @@ export default class App extends Component<AppProps, AppState> {
             return <EditTodo {...props} auth={this.props.auth} />
           }}
         />
+
+        
 
         <Route component={NotFound} />
       </Switch>

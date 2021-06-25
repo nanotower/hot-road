@@ -70,7 +70,6 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
-          # - dynamodb:Query
           - dynamodb:GetItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
 
@@ -189,7 +188,7 @@ functions:
       - http:
           authorizer: Auth
           method: post
-          path: hotroad/user/{userId}/attachment
+          path: hotroad/user/attachment
           cors: true
     iamRoleStatements:
       - Effect: Allow

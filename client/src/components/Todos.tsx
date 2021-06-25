@@ -15,36 +15,23 @@ import {
 } from 'semantic-ui-react'
 
 import { createTodo, deleteTodo, getTodos, patchTodo } from '../api/todos-api'
-import Auth from '../auth/Auth'
-import { Todo } from '../types/Todo'
 
-interface TodosProps {
-  auth: Auth
-  history: History
-}
-
-interface TodosState {
-  todos: Todo[]
-  newTodoName: string
-  loadingTodos: boolean
-}
-
-export class Todos extends React.PureComponent<TodosProps, TodosState> {
-  state: TodosState = {
+export class Todos extends React.Component {
+  state = {
     todos: [],
     newTodoName: '',
     loadingTodos: true
   }
 
-  handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  handleNameChange = (event) => {
     this.setState({ newTodoName: event.target.value })
   }
 
-  onEditButtonClick = (todoId: string) => {
+  onEditButtonClick = (todoId) => {
     this.props.history.push(`/todos/${todoId}/edit`)
   }
 
-  onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+  onTodoCreate = async (event) => {
     try {
       const dueDate = this.calculateDueDate()
       const newTodo = await createTodo(this.props.auth.getIdToken(), {
@@ -60,7 +47,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     }
   }
 
-  onTodoDelete = async (todoId: string) => {
+  onTodoDelete = async (todoId) => {
     try {
       await deleteTodo(this.props.auth.getIdToken(), todoId)
       this.setState({

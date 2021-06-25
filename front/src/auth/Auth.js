@@ -1,6 +1,6 @@
 import auth0 from 'auth0-js';
 import { authConfig } from '../config';
-import { getUser } from '../api/forum-api'
+import { getUser } from '../api/forumApi';
 
 export default class Auth {
   accessToken;
@@ -24,7 +24,6 @@ export default class Auth {
     this.handleAuthentication = this.handleAuthentication.bind(this);
     this.isAuthenticated = this.isAuthenticated.bind(this);
     this.getAccessToken = this.getAccessToken.bind(this);
-    this.getIdToken = this.getIdToken.bind(this);
     this.renewSession = this.renewSession.bind(this);
   }
 
@@ -54,6 +53,10 @@ export default class Auth {
     return this.idToken;
   }
 
+  getUser() {
+    return this.userRegistered;
+  }
+
   async setSession(authResult) {
     // Set isLoggedIn flag in localStorage
     localStorage.setItem('isLoggedIn', 'true');
@@ -63,16 +66,15 @@ export default class Auth {
     this.accessToken = authResult.accessToken;
     this.idToken = authResult.idToken;
     this.expiresAt = expiresAt;
-    // TODO: Conditional user load 
-    this.userRegistered = await getUser(this.getIdToken())
-    if (this.userRegistered.error) {
-      this.history.replace('/register')
-      return false
-    } 
-    this.history.replace('/')
-    return this.userRegistered
-    // navigate to the home route
-    // this.history.replace('/');
+
+    this.userRegistered = await getUser(this.idToken)
+
+    if (!this.userRegistered) {
+      this.history.replace('/register');
+      return;
+    } else {
+      this.history.replace('/');
+    }
   }
 
   renewSession() {

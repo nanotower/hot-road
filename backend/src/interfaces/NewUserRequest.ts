@@ -1,4 +1,3 @@
 export interface NewUserRequest {
-    userName: string,
-    pic: string
+    userName: string
 }

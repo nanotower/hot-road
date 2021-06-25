@@ -10,12 +10,10 @@ const history = createHistory()
 
 const auth = new Auth(history)
 
-const handleAuthentication = async (props: any, dispatch) => {
+const handleAuthentication = async (props) => {
   const location = props.location
   if (/access_token|id_token|error/.test(location.hash)) {
-    const user = await auth.handleAuthentication()
-    console.log('user', user)
-    // user && dispatch(user)
+    await auth.handleAuthentication()
   }
 }
 
@@ -28,7 +26,7 @@ export const makeAuthRouting = () => {
         <Route
           path="/callback"
           render={props => {
-            handleAuthentication(props, dispatch)
+            handleAuthentication(props)
             return <Callback />
           }}
         />

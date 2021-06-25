@@ -1,0 +1,24 @@
+h1 {
+  margin: 20px auto;
+}
+
+.containerStyle {
+  display: flex;
+  flex-direction: column;
+  margin: 50px auto;
+  width: 50%;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.imgContainerStyle {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  margin: 0 auto;
+  border-radius: 5%;
+}
+
+.imageStyle {
+  width: 150px;
+}
