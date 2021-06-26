@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { Link, Route, Router, Switch } from 'react-router-dom';
-import { Grid, Menu, Segment } from 'semantic-ui-react';
-
+import { Grid, Menu, Segment, Header } from 'semantic-ui-react';
+import styles from './App.module.css';
 import LogIn from './components/Login';
 import NotFound from './components/NotFound';
 import Register from './components/Register';
 import Home from './components/Home/Home';
+import TopicComments from './components/TopicComments/TopicComments';
+import UserBox from './components/UserBox/UserBox';
 
 const App = (props) => {
   const [userState, setUserState] = useState({});
+  const [topic, setTopic] = useState({});
   const appProps = { props };
 
   const handleLogin = () => {
@@ -64,11 +67,20 @@ const App = (props) => {
     //     />
     //   );
     // } else {
-      return (
+
+    const user = props.auth.userRegistered
+      ? props.auth.userRegistered
+      : props.userState;
+
+    return (
+      <>
+        <div className={styles.userbox}>
+          <UserBox user={user} className={styles.user} />
+        </div>
         <Switch>
           <Route
-            path="/register" 
-            exact 
+            path="/register"
+            exact
             render={(props) => {
               return (
                 <Register
@@ -92,10 +104,28 @@ const App = (props) => {
                   getUser={handleGetUser}
                   userState={userState}
                   setUserState={setUserState}
+                  setTopic={setTopic}
                 />
               );
               // return <Todos {...props} auth={props.auth} />;
               // return <h1>HEY {props.auth.userRegistered.userName}</h1>;
+            }}
+          />
+
+          <Route
+            path="/topic/:topicId"
+            exact
+            render={(props) => {
+              return (
+                <TopicComments
+                  {...props}
+                  auth={appProps.props.auth}
+                  getUser={handleGetUser}
+                  userState={userState}
+                  setUserState={setUserState}
+                  topic={topic}
+                />
+              );
             }}
           />
 
@@ -110,14 +140,17 @@ const App = (props) => {
 
           <Route component={NotFound} />
         </Switch>
-      );
-    
+      </>
+    );
   };
 
   return (
     <div>
       <Segment style={{ padding: '8em 0em' }} vertical>
         <Grid container stackable verticalAlign="middle">
+      <Header as="h1" className={styles.title}>
+        Hot Road
+      </Header>
           <Grid.Row>
             <Grid.Column width={16}>
               <Router history={props.history}>

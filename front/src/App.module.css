@@ -1,0 +1,9 @@
+.userbox {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.title {
+    margin: 0 auto;
+}

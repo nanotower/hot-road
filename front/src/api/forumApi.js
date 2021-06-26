@@ -51,3 +51,16 @@ export const getTopics = async (idToken) => {
   console.log('Topics:', response.data)
   return response.data.topics
 }
+
+export const getComments = async (idToken, topicId) => {
+  console.log('Fetching comments')
+
+  const response = await Axios.get(`${apiEndpoint}/hotroad/topic/${topicId}/comments`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    },
+  })
+  console.log('Topics:', response.data)
+  return response.data.comments
+}

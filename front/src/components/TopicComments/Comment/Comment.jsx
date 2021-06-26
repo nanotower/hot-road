@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-
 import {
   Button,
   Checkbox,
@@ -13,23 +12,23 @@ import {
   Loader,
 } from 'semantic-ui-react';
 
-const Topic = ({ topic, pos, onTopicButtonClick }) => {
-  const creationDate = moment(topic.createdAt).format("MMM Do YY");
+const Comment = ({ comment }) => {
+  const creationDate = moment(comment.createdAt).format('MMM Do YY');
+  const author = JSON.parse(comment.author);
+
   return (
-    <Grid.Row key={topic.topicId}>
+    <Grid.Row key={comment.topicId}>
       <Grid.Column width={9} verticalAlign="middle">
-        {topic.title}
+        {comment.content}
       </Grid.Column>
       <Grid.Column width={3} verticalAlign="middle">
-        {`Comments ${topic.comments}`}
+        <div>
+          <Image src={author.authorPic} avatar />
+          <span>{author.authorName}</span>
+        </div>
       </Grid.Column>
       <Grid.Column width={3} verticalAlign="middle">
         {creationDate}
-      </Grid.Column>
-      <Grid.Column width={1} floated="right">
-        <Button icon color="blue" onClick={() => onTopicButtonClick(topic)}>
-          <Icon name="hand point left outline" />
-        </Button>
       </Grid.Column>
       <Grid.Column width={16}>
         <Divider />
@@ -38,4 +37,4 @@ const Topic = ({ topic, pos, onTopicButtonClick }) => {
   );
 };
 
-export default Topic;
+export default Comment;
