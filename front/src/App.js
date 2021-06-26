@@ -5,7 +5,7 @@ import { Grid, Menu, Segment } from 'semantic-ui-react';
 import LogIn from './components/Login';
 import NotFound from './components/NotFound';
 import Register from './components/Register';
-import Home from './components/Home';
+import Home from './components/Home/Home';
 
 const App = (props) => {
   const [userState, setUserState] = useState({});

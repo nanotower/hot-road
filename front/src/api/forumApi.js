@@ -39,4 +39,15 @@ export async function registerUser(idToken, userName) {
   return response.data
 }
 
+export const getTopics = async (idToken) => {
+  console.log('Fetching topics')
 
+  const response = await Axios.get(`${apiEndpoint}/hotroad/topic/all`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    },
+  })
+  console.log('Topics:', response.data)
+  return response.data.topics
+}
