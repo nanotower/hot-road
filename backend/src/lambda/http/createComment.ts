@@ -19,7 +19,7 @@ import {
     const authorId = getUserId(event)
     const topicId = event.pathParameters.topicId
     const {content, userId, authorPic, authorName} = JSON.parse(event.body)
-    const authorObj = { authorId, authorPic, authorName}
+    const authorObj = { authorId, authorPic, authorName} //comment author
 
     logger.info('variables', {authorId, topicId, content, userId, authorPic, authorObj})
   

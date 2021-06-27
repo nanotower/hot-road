@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button,
-  Checkbox,
-  Divider,
   Grid,
   Header,
-  Icon,
-  Input,
-  Image,
   Loader,
 } from 'semantic-ui-react';
 import styles from './TopicComments.module.css';
 import Comment from './Comment/Comment';
 import { getComments } from '../../api/forumApi';
+import CreateComment from './CreateComment/CreateComment';
 
-const TopicComments = ({ auth, history, topic }) => {
+const TopicComments = ({ auth, history, topic, user }) => {
   const [comments, setcomments] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,6 +35,15 @@ const TopicComments = ({ auth, history, topic }) => {
       :
       <div>
          <Grid padded>
+           <CreateComment 
+            auth={auth}
+            fetchComments={fetchComments}
+            setLoading={setLoading}
+            userId={topic.userId}
+            authorPic={user.attachmentUrl}
+            authorName={user.userName}
+            topicId={topic.topicId}
+           />
           {comments.map((comment, pos) => (
             <Comment comment={comment} pos={pos} />
           ))}

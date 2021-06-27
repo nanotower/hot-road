@@ -77,3 +77,17 @@ export const createTopic = async (
   })
   return response.data.newItem
 }
+
+export const createComment = async (
+  idToken,
+  topicId,
+  newComment
+) => {
+  const response = await Axios.post(`${apiEndpoint}/hotroad/topic/${topicId}/create-comment`,  JSON.stringify(newComment), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    }
+  })
+  return response.data.newItem
+}

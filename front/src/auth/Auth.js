@@ -57,6 +57,10 @@ export default class Auth {
     return this.userRegistered;
   }
 
+  setUser(user) {
+    this.userRegistered = user;
+  }
+
   async setSession(authResult) {
     // Set isLoggedIn flag in localStorage
     localStorage.setItem('isLoggedIn', 'true');
@@ -67,7 +71,8 @@ export default class Auth {
     this.idToken = authResult.idToken;
     this.expiresAt = expiresAt;
 
-    this.userRegistered = await getUser(this.idToken)
+    const userRegistered = await getUser(this.idToken);
+    this.setUser(userRegistered);
 
     if (!this.userRegistered) {
       this.history.replace('/register');

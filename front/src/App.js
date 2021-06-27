@@ -8,7 +8,7 @@ import Register from './components/Register';
 import Home from './components/Home/Home';
 import TopicComments from './components/TopicComments/TopicComments';
 import UserBox from './components/UserBox/UserBox';
-import { getUser } from './api/forumApi.js';
+// import { getUser } from './api/forumApi.js';
 
 const App = (props) => {
   const [userState, setUserState] = useState({});
@@ -69,10 +69,10 @@ const App = (props) => {
     //     />
     //   );
     // }
-    // console.log();
+    debugger
     const user = props.auth.userRegistered
       ? props.auth.userRegistered
-      : props.userState;
+      : userState;
 
     return (
       <>
@@ -131,6 +131,7 @@ const App = (props) => {
                   userState={userState}
                   setUserState={setUserState}
                   topic={topic}
+                  user={user}
                 />
                 </>
               );

@@ -27,6 +27,7 @@ const Register = ({ setUserState, auth, userState, history }) => {
       });
       setUserPic(userRegistered.newUser.attachmentUrl);
       setUserState(userRegistered.newUser);
+      // auth.setUser(userRegistered.newUser);
     }
   };
 
