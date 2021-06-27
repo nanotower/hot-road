@@ -39,6 +39,19 @@ export async function registerUser(idToken, userName) {
   return response.data
 }
 
+export const getUserTopics = async (idToken) => {
+  console.log('Fetching user topics')
+
+  const response = await Axios.get(`${apiEndpoint}/hotroad/user/topics`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    },
+  })
+  console.log('Topics:', response.data)
+  return response.data.userTopics
+}
+
 export const getTopics = async (idToken) => {
   console.log('Fetching topics')
 
@@ -90,4 +103,16 @@ export const createComment = async (
     }
   })
   return response.data.newItem
+}
+
+export const deleteTopic = async (
+  idToken,
+  topicId
+) => {
+  await Axios.delete(`${apiEndpoint}/hotroad/topic/${topicId}/delete`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    }
+  })
 }

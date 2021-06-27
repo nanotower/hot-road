@@ -1,6 +1,7 @@
 import DbClient from './DbClient'
 
 import { TopicItem } from '../interfaces/TopicItem'
+import { NewUpdateRequest } from '../interfaces/NewUpdateRequest'
 
 import { createLogger } from '../utils/logger'
 const logger = createLogger('Topics-Data');
@@ -113,6 +114,27 @@ export class TopicsData extends DbClient {
         })
         .promise()
     return todosList.Items as TopicItem[]
+  }
+
+  async updateTopic(updatedTopic: NewUpdateRequest, userId: string, topicId: string) {
+    logger.info('getUserTopics', { updatedTopic, userId, topicId })
+
+    const updatedTopicRes = await this.docClient.update({
+      TableName: this.topicsTable,
+      Key: {
+        topicId,
+      },
+      UpdateExpression: 'set #title = :t',
+      ExpressionAttributeValues: {
+        ':t': updatedTopic.title
+      },
+      ExpressionAttributeNames: {
+        '#title': 'title'
+      },
+      ReturnValues:"UPDATED_NEW"
+    }).promise();
+
+    return updatedTopicRes
   }
 
   // async registerUser(user: UserItem): Promise<UserItem> {

@@ -69,7 +69,7 @@ const App = (props) => {
     //     />
     //   );
     // }
-    debugger
+  
     const user = props.auth.userRegistered
       ? props.auth.userRegistered
       : userState;

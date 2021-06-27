@@ -113,7 +113,7 @@ functions:
     events:
       - http:
           authorizer: Auth
-          method: post
+          method: delete
           path: hotroad/topic/{topicId}/delete
           cors: true
     iamRoleStatementsName: ${self:service.name}-DeleteTopic-${self:provider.stage}
@@ -216,6 +216,32 @@ functions:
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}/index/${self:provider.environment.USER_ID_INDEX}
 
+  UpdateTopicName:
+    handler: src/lambda/http/updateTopicName.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: patch
+          path: hotroad/topic/{topicId}/modify
+          cors: true
+          # reqValidatorName: 'xMyRequestValidator'
+          # documentation:
+          #   summary: "update new Todo"
+          #   description: "update new Todo"
+          #   requestModels:
+          #     "application/json": UpdateTodoRequest
+          # methodResponses:
+          #     - statusCode: '200'
+          #       responseModels:
+          #         "application/json": UpdateTodoResponse
+          #     - ${self:custom.commonModelSchemaFragments.MethodResponse400Json}
+    iamRoleStatementsName: ${self:service.name}-UpdateTopicName-${self:provider.stage}
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:UpdateItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}
+
 resources:
   Resources:
     # GatewayResponseDefault4XX:
@@ -248,15 +274,11 @@ resources:
         AttributeDefinitions:
           - AttributeName: topicId
             AttributeType: S
-          # - AttributeName: createdAt
-          #   AttributeType: S
           - AttributeName: userId
             AttributeType: S
         KeySchema:
           - AttributeName: topicId
             KeyType: HASH
-          # - AttributeName: createdAt
-          #   KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.TOPICS_TABLE}
         GlobalSecondaryIndexes:
@@ -273,15 +295,11 @@ resources:
         AttributeDefinitions:
           - AttributeName: commentId
             AttributeType: S
-          # - AttributeName: createdAt
-          #   AttributeType: S
           - AttributeName: topicId
             AttributeType: S
         KeySchema:
           - AttributeName: commentId
             KeyType: HASH
-          # - AttributeName: createdAt
-          #   KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.COMMENTS_TABLE}
         GlobalSecondaryIndexes:
