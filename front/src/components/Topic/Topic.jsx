@@ -27,7 +27,7 @@ const Topic = ({ topic, pos, onTopicButtonClick }) => {
         {creationDate}
       </Grid.Column>
       <Grid.Column width={1} floated="right">
-        <Button icon color="blue" onClick={() => onTopicButtonClick(topic)}>
+        <Button icon color="teal" onClick={() => onTopicButtonClick(topic)}>
           <Icon name="hand point left outline" />
         </Button>
       </Grid.Column>

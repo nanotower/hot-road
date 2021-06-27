@@ -8,6 +8,7 @@ import Register from './components/Register';
 import Home from './components/Home/Home';
 import TopicComments from './components/TopicComments/TopicComments';
 import UserBox from './components/UserBox/UserBox';
+import { getUser } from './api/forumApi.js';
 
 const App = (props) => {
   const [userState, setUserState] = useState({});
@@ -64,19 +65,17 @@ const App = (props) => {
     //       auth={props.auth}
     //       setUserState={setUserState}
     //       userState={userState}
+    //       history={props.history}
     //     />
     //   );
-    // } else {
-
+    // }
+    // console.log();
     const user = props.auth.userRegistered
       ? props.auth.userRegistered
       : props.userState;
 
     return (
       <>
-        <div className={styles.userbox}>
-          <UserBox user={user} className={styles.user} />
-        </div>
         <Switch>
           <Route
             path="/register"
@@ -88,6 +87,7 @@ const App = (props) => {
                   auth={appProps.props.auth}
                   setUserState={setUserState}
                   userState={userState}
+                  history={props.history}
                 />
               );
             }}
@@ -98,17 +98,20 @@ const App = (props) => {
             exact
             render={(props) => {
               return (
-                <Home
-                  {...props}
-                  auth={appProps.props.auth}
-                  getUser={handleGetUser}
-                  userState={userState}
-                  setUserState={setUserState}
-                  setTopic={setTopic}
-                />
+                <>
+                  <div className={styles.userbox}>
+                    <UserBox user={user} className={styles.user} />
+                  </div>
+                  <Home
+                    {...props}
+                    auth={appProps.props.auth}
+                    getUser={handleGetUser}
+                    userState={userState}
+                    setUserState={setUserState}
+                    setTopic={setTopic}
+                  />
+                </>
               );
-              // return <Todos {...props} auth={props.auth} />;
-              // return <h1>HEY {props.auth.userRegistered.userName}</h1>;
             }}
           />
 
@@ -117,6 +120,10 @@ const App = (props) => {
             exact
             render={(props) => {
               return (
+                <>
+                <div className={styles.userbox}>
+                <UserBox user={user} className={styles.user} />
+              </div>
                 <TopicComments
                   {...props}
                   auth={appProps.props.auth}
@@ -125,6 +132,7 @@ const App = (props) => {
                   setUserState={setUserState}
                   topic={topic}
                 />
+                </>
               );
             }}
           />
@@ -148,9 +156,9 @@ const App = (props) => {
     <div>
       <Segment style={{ padding: '8em 0em' }} vertical>
         <Grid container stackable verticalAlign="middle">
-      <Header as="h1" className={styles.title}>
-        Hot Road
-      </Header>
+          <Header as="h1" className={styles.title}>
+            Hot Road
+          </Header>
           <Grid.Row>
             <Grid.Column width={16}>
               <Router history={props.history}>

@@ -12,6 +12,7 @@ import {
 import styles from './Home.module.css';
 import Topic from '../Topic/Topic';
 import { getTopics } from '../../api/forumApi';
+import CreateTopic from '../CreateTopic/CreateTopic';
 
 const Home = (props) => {
   const [topics, setTopics] = useState([]);
@@ -44,7 +45,8 @@ const Home = (props) => {
       </Loader>
     ) : (
       <div className={styles.topics}>
-        <Grid padded>
+        <Grid padded className={styles.grid}>
+          <CreateTopic auth={props.auth} fetchTopics={fetchTopics} setLoading={setLoading} />
           {topics.map((topic, pos) => (
             <Topic
               topic={topic}

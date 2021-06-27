@@ -64,3 +64,16 @@ export const getComments = async (idToken, topicId) => {
   console.log('Topics:', response.data)
   return response.data.comments
 }
+
+export const createTopic = async (
+  idToken,
+  newTopic
+) => {
+  const response = await Axios.post(`${apiEndpoint}/hotroad/topic/create`,  JSON.stringify(newTopic), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    }
+  })
+  return response.data.newItem
+}

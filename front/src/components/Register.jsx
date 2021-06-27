@@ -4,7 +4,7 @@ import { getUploadUrl, uploadFile, registerUser } from '../api/forumApi';
 import styles from './Register.module.css';
 import { Button, Image, Form } from 'semantic-ui-react';
 
-const Register = ({ setUserState, auth, userState }) => {
+const Register = ({ setUserState, auth, userState, history }) => {
   const [userName, setUserName] = useState('');
   const [userPic, setUserPic] = useState(
     'https://secure.gravatar.com/avatar/33bea50db7557128349de53a89e5e9c2?s=512&d=mm&r=pg'
@@ -53,6 +53,9 @@ const Register = ({ setUserState, auth, userState }) => {
       await uploadFile(uploadUrl, userFile.file);
 
       alert('File was uploaded!');
+      setTimeout(() => {
+        history.push('/');
+      }, 2000);
     } catch (e) {
       alert('Could not upload a file: ' + e.message);
     } finally {
