@@ -8,7 +8,8 @@ import Register from './components/Register';
 import Home from './components/Home/Home';
 import TopicComments from './components/TopicComments/TopicComments';
 import UserBox from './components/UserBox/UserBox';
-// import { getUser } from './api/forumApi.js';
+import UserProfile from './components/UserProfile/UserProfile';
+
 
 const App = (props) => {
   const [userState, setUserState] = useState({});
@@ -69,7 +70,7 @@ const App = (props) => {
     //     />
     //   );
     // }
-  
+
     const user = props.auth.userRegistered
       ? props.auth.userRegistered
       : userState;
@@ -100,7 +101,11 @@ const App = (props) => {
               return (
                 <>
                   <div className={styles.userbox}>
-                    <UserBox user={user} className={styles.user} />
+                    <UserBox
+                      user={user}
+                      className={styles.user}
+                      history={props.history}
+                    />
                   </div>
                   <Home
                     {...props}
@@ -121,28 +126,39 @@ const App = (props) => {
             render={(props) => {
               return (
                 <>
-                <div className={styles.userbox}>
-                <UserBox user={user} className={styles.user} />
-              </div>
-                <TopicComments
-                  {...props}
-                  auth={appProps.props.auth}
-                  getUser={handleGetUser}
-                  userState={userState}
-                  setUserState={setUserState}
-                  topic={topic}
-                  user={user}
-                />
+                  <div className={styles.userbox}>
+                    <UserBox
+                      user={user}
+                      className={styles.user}
+                      history={props.history}
+                    />
+                  </div>
+                  <TopicComments
+                    {...props}
+                    auth={appProps.props.auth}
+                    getUser={handleGetUser}
+                    userState={userState}
+                    setUserState={setUserState}
+                    topic={topic}
+                    user={user}
+                  />
                 </>
               );
             }}
           />
 
           <Route
-            path="/todos/:todoId/edit"
+            path="/profile"
             exact
             render={(props) => {
-              return <h1>Ho</h1>;
+              return (
+                <UserProfile
+                  {...props}
+                  auth={appProps.props.auth}
+                  user={user}
+                  history={props.history}
+                />
+              );
               // return <EditTodo {...props} auth={props.auth} />;
             }}
           />

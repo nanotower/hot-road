@@ -3,14 +3,9 @@ import moment from 'moment';
 
 import {
   Button,
-  Checkbox,
   Divider,
   Grid,
-  Header,
   Icon,
-  Input,
-  Image,
-  Loader,
 } from 'semantic-ui-react';
 
 const Topic = ({ topic, pos, onTopicButtonClick }) => {
