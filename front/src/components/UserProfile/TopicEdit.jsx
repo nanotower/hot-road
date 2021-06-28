@@ -7,7 +7,7 @@ import {
     Input,
   } from 'semantic-ui-react'
 
-const TopicEdit = ({topic, handleNameTopicSubmit, handleDeleteTopic}) => {
+const TopicEdit = ({topic, handleNameTopicSubmit, handleDeleteTopic, loading}) => {
     const [topicTitle, setTopicTitle] = useState(topic.title);
 
     const inputRef = React.useRef();
@@ -23,7 +23,7 @@ const TopicEdit = ({topic, handleNameTopicSubmit, handleDeleteTopic}) => {
     return (
         <Grid.Row key={topic.topicId}>
               <Grid.Column width={13} verticalAlign="middle">
-                <Input ref={inputRef} value={topicTitle} onChange={handleChangeName} />
+                <Input loading={loading} ref={inputRef} value={topicTitle} onChange={handleChangeName} />
               </Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
