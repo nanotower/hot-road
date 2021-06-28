@@ -48,11 +48,38 @@ custom:
       inMemory: true
     stages:
       - ${self:provider.stage}
+
   serverless-offline:
     port: 3003
     httpPort: 3003
   serverless-iam-roles-per-function:
     defaultInherit: true
+
+  documentation:
+    api:
+      info:
+        version: '1.0.0'
+        title: serverless-forum-app
+        description: hotroad forum Api
+    models:
+      - name: CreateTopicRequest
+        contentType: "application/json"
+        schema: ${file(src/models/createTopicRequestValidator.json)}
+      - name: CreateTopicResponse
+        contentType: "application/json"
+        schema: ${file(src/models/createTopicResponseValidator.json)}
+      - name: CreateCommentRequest
+        contentType: "application/json"
+        schema: ${file(src/models/createCommentRequestValidator.json)}
+      - name: CreateCommentResponse
+        contentType: "application/json"
+        schema: ${file(src/models/createCommentResponseValidator.json)}
+          
+  commonModelSchemaFragments:
+    MethodResponse400Json:
+      statusCode: '400'
+      responseModels:
+        "application/json": 400JsonResponse
 
 functions:
   Auth:
@@ -96,6 +123,17 @@ functions:
           method: post
           path: hotroad/topic/create
           cors: true
+          reqValidatorName: 'xMyRequestValidator'
+          documentation:
+            summary: "new topic"
+            description: "create new topic"
+            requestModels:
+              "application/json": CreateTopicRequest
+          methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": CreateTopicResponse
+              - ${self:custom.commonModelSchemaFragments.MethodResponse400Json}
     iamRoleStatementsName: ${self:service.name}-CreateTopic-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
@@ -151,6 +189,17 @@ functions:
           method: post
           path: hotroad/topic/{topicId}/create-comment
           cors: true
+          reqValidatorName: 'xMyRequestValidator'
+          documentation:
+            summary: "new comment"
+            description: "create new comment in topic"
+            requestModels:
+              "application/json": CreateCommentRequest
+          methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": CreateCommentResponse
+              - ${self:custom.commonModelSchemaFragments.MethodResponse400Json}
     iamRoleStatementsName: ${self:service.name}-CreateComment-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
@@ -345,6 +394,14 @@ resources:
               Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
     
+    xMyRequestValidator:  
+      Type: "AWS::ApiGateway::RequestValidator"
+      Properties:
+        Name: 'my-req-validator'
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false  
 
               
 # you can overwrite defaults here
