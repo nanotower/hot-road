@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "serverless-forum-app",
+    "type": "object",
+    "properties": {
+      "newItem": {
+        "type": "object"
+      },
+      "updatedUser":{
+        "type": "object"
+      }
+    },
+    "required": [
+      "newItem",
+      "updatedUser"
+    ],
+    "additionalProperties": false
+  }

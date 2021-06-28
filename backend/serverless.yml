@@ -48,11 +48,38 @@ custom:
       inMemory: true
     stages:
       - ${self:provider.stage}
+
   serverless-offline:
     port: 3003
     httpPort: 3003
   serverless-iam-roles-per-function:
     defaultInherit: true
+
+  documentation:
+    api:
+      info:
+        version: '1.0.0'
+        title: serverless-forum-app
+        description: hotroad forum Api
+    models:
+      - name: CreateTopicRequest
+        contentType: "application/json"
+        schema: ${file(src/models/createTopicRequestValidator.json)}
+      - name: CreateTopicResponse
+        contentType: "application/json"
+        schema: ${file(src/models/createTopicResponseValidator.json)}
+      - name: CreateCommentRequest
+        contentType: "application/json"
+        schema: ${file(src/models/createCommentRequestValidator.json)}
+      - name: CreateCommentResponse
+        contentType: "application/json"
+        schema: ${file(src/models/createCommentResponseValidator.json)}
+          
+  commonModelSchemaFragments:
+    MethodResponse400Json:
+      statusCode: '400'
+      responseModels:
+        "application/json": 400JsonResponse
 
 functions:
   Auth:
@@ -70,7 +97,6 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
-          # - dynamodb:Query
           - dynamodb:GetItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}
 
@@ -97,6 +123,17 @@ functions:
           method: post
           path: hotroad/topic/create
           cors: true
+          reqValidatorName: 'xMyRequestValidator'
+          documentation:
+            summary: "new topic"
+            description: "create new topic"
+            requestModels:
+              "application/json": CreateTopicRequest
+          methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": CreateTopicResponse
+              - ${self:custom.commonModelSchemaFragments.MethodResponse400Json}
     iamRoleStatementsName: ${self:service.name}-CreateTopic-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
@@ -114,7 +151,7 @@ functions:
     events:
       - http:
           authorizer: Auth
-          method: post
+          method: delete
           path: hotroad/topic/{topicId}/delete
           cors: true
     iamRoleStatementsName: ${self:service.name}-DeleteTopic-${self:provider.stage}
@@ -152,6 +189,17 @@ functions:
           method: post
           path: hotroad/topic/{topicId}/create-comment
           cors: true
+          reqValidatorName: 'xMyRequestValidator'
+          documentation:
+            summary: "new comment"
+            description: "create new comment in topic"
+            requestModels:
+              "application/json": CreateCommentRequest
+          methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": CreateCommentResponse
+              - ${self:custom.commonModelSchemaFragments.MethodResponse400Json}
     iamRoleStatementsName: ${self:service.name}-CreateComment-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
@@ -189,7 +237,7 @@ functions:
       - http:
           authorizer: Auth
           method: post
-          path: hotroad/user/{userId}/attachment
+          path: hotroad/user/attachment
           cors: true
     iamRoleStatements:
       - Effect: Allow
@@ -216,6 +264,32 @@ functions:
         Action:
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}/index/${self:provider.environment.USER_ID_INDEX}
+
+  UpdateTopicName:
+    handler: src/lambda/http/updateTopicName.handler
+    events:
+      - http:
+          authorizer: Auth
+          method: patch
+          path: hotroad/topic/{topicId}/modify
+          cors: true
+          # reqValidatorName: 'xMyRequestValidator'
+          # documentation:
+          #   summary: "update new Todo"
+          #   description: "update new Todo"
+          #   requestModels:
+          #     "application/json": UpdateTodoRequest
+          # methodResponses:
+          #     - statusCode: '200'
+          #       responseModels:
+          #         "application/json": UpdateTodoResponse
+          #     - ${self:custom.commonModelSchemaFragments.MethodResponse400Json}
+    iamRoleStatementsName: ${self:service.name}-UpdateTopicName-${self:provider.stage}
+    iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:UpdateItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TOPICS_TABLE}
 
 resources:
   Resources:
@@ -249,15 +323,11 @@ resources:
         AttributeDefinitions:
           - AttributeName: topicId
             AttributeType: S
-          # - AttributeName: createdAt
-          #   AttributeType: S
           - AttributeName: userId
             AttributeType: S
         KeySchema:
           - AttributeName: topicId
             KeyType: HASH
-          # - AttributeName: createdAt
-          #   KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.TOPICS_TABLE}
         GlobalSecondaryIndexes:
@@ -274,15 +344,11 @@ resources:
         AttributeDefinitions:
           - AttributeName: commentId
             AttributeType: S
-          # - AttributeName: createdAt
-          #   AttributeType: S
           - AttributeName: topicId
             AttributeType: S
         KeySchema:
           - AttributeName: commentId
             KeyType: HASH
-          # - AttributeName: createdAt
-          #   KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.COMMENTS_TABLE}
         GlobalSecondaryIndexes:
@@ -328,6 +394,14 @@ resources:
               Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
     
+    xMyRequestValidator:  
+      Type: "AWS::ApiGateway::RequestValidator"
+      Properties:
+        Name: 'my-req-validator'
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false  
 
               
 # you can overwrite defaults here

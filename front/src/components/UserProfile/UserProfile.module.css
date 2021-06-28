@@ -1,0 +1,27 @@
+.topics {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.title {
+    margin: 0 auto;
+}
+
+.grid {
+    width: 100%;
+}
+.user {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.username {
+    font-size: 1.7rem;
+    font-weight: bold;
+    margin: 20px 0;
+}
