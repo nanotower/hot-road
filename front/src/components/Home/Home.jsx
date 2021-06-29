@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button,
-  Divider,
   Grid,
   Header,
-  Icon,
-  Input,
-  Image,
   Loader,
 } from 'semantic-ui-react';
 import styles from './Home.module.css';
-import Topic from '../Topic/Topic';
+import Topic from './components/Topic';
 import { getTopics } from '../../api/forumApi';
-import CreateTopic from '../CreateTopic/CreateTopic';
+import CreateTopic from '../CreateTopic';
 
 const Home = (props) => {
   const [topics, setTopics] = useState([]);

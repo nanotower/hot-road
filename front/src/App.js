@@ -4,7 +4,7 @@ import { Grid, Menu, Segment, Header } from 'semantic-ui-react';
 import styles from './App.module.css';
 import LogIn from './components/Login';
 import NotFound from './components/NotFound';
-import Register from './components/Register';
+import Register from './components/Register/Register';
 import Home from './components/Home/Home';
 import TopicComments from './components/TopicComments/TopicComments';
 import UserBox from './components/UserBox/UserBox';
@@ -60,16 +60,6 @@ const App = (props) => {
     if (!props.auth.isAuthenticated()) {
       return <LogIn auth={props.auth} />;
     }
-    // if (!props.auth.userRegistered) {
-    //   return (
-    //     <Register
-    //       auth={props.auth}
-    //       setUserState={setUserState}
-    //       userState={userState}
-    //       history={props.history}
-    //     />
-    //   );
-    // }
 
     const user = props.auth.userRegistered
       ? props.auth.userRegistered
@@ -159,7 +149,6 @@ const App = (props) => {
                   history={props.history}
                 />
               );
-              // return <EditTodo {...props} auth={props.auth} />;
             }}
           />
 

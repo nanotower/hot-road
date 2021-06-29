@@ -5,9 +5,9 @@ import {
   Loader,
 } from 'semantic-ui-react';
 import styles from './TopicComments.module.css';
-import Comment from './Comment/Comment';
+import Comment from './components/Comment';
+import CreateComment from './components/CreateComment';
 import { getComments } from '../../api/forumApi';
-import CreateComment from './CreateComment/CreateComment';
 
 const TopicComments = ({ auth, history, topic, user }) => {
   const [comments, setcomments] = useState([]);

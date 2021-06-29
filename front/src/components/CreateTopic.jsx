@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Divider, Grid, Input } from 'semantic-ui-react';
-import { createTopic } from '../../api/forumApi';
+import { createTopic } from '../api/forumApi';
 
 const CreateTopic = ({auth, fetchTopics, setLoading}) => {
   const [topicName, setTopicName] = useState('');
@@ -12,7 +12,7 @@ const CreateTopic = ({auth, fetchTopics, setLoading}) => {
   const onTodoCreate = async (event) => {
     try {
       setLoading(true);
-      const newTopic = await createTopic(auth.getIdToken(), {
+      await createTopic(auth.getIdToken(), {
         title: topicName,
       })
       fetchTopics();

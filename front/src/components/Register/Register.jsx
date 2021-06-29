@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { getUploadUrl, uploadFile, registerUser } from '../api/forumApi';
+import { getUploadUrl, uploadFile, registerUser } from '../../api/forumApi';
 import styles from './Register.module.css';
 import { Button, Image, Form } from 'semantic-ui-react';
 

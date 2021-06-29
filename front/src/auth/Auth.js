@@ -80,7 +80,6 @@ export default class Auth {
     } else {
       this.history.replace('/');
     }
-    // this.history.replace('/');
   }
 
   renewSession() {
