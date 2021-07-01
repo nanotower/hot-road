@@ -12,8 +12,8 @@ export class S3Files {
     private readonly s3 = new XAWS.S3({ signatureVersion: 'v4' })
   ) {}
 
-  generateUploadURL(todoId: string, expires: string) {
-    const imgObj = { Bucket: this.imagesS3Bucket, Key: todoId, Expires: parseInt(expires, 10) }
+  generateUploadURL(userId: string, expires: string) {
+    const imgObj = { Bucket: this.imagesS3Bucket, Key: userId, Expires: parseInt(expires, 10) }
     logger.info('generateURL', {imgObj})
     return this.s3.getSignedUrl('putObject', imgObj)
   }

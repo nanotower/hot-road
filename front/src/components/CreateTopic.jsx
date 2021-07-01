@@ -9,7 +9,7 @@ const CreateTopic = ({auth, fetchTopics, setLoading}) => {
     setTopicName(event.target.value );
   }
 
-  const onTodoCreate = async (event) => {
+  const onTopicCreate = async (event) => {
     try {
       setLoading(true);
       await createTopic(auth.getIdToken(), {
@@ -30,7 +30,7 @@ const CreateTopic = ({auth, fetchTopics, setLoading}) => {
             labelPosition: 'left',
             icon: 'add',
             content: 'New topic',
-            onClick: onTodoCreate,
+            onClick: onTopicCreate,
           }}
           fluid
           actionPosition="left"
