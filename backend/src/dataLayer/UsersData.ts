@@ -9,7 +9,8 @@ const logger = createLogger('Users-Data')
 export class UsersData extends DbClient {
   constructor(
     private readonly usersTable = process.env.USERS_TABLE,
-    private readonly bucketName = process.env.IMAGES_S3_BUCKET
+    // private readonly bucketName = process.env.IMAGES_S3_BUCKET,
+    private readonly thumbsBucketName = process.env.THUMBNAILS_S3_BUCKET
     ) {
     super()
       
@@ -32,7 +33,8 @@ export class UsersData extends DbClient {
   async registerUser(user: UserItem): Promise<UserItem> {
     logger.info('Registering user', {user})
     
-    const attachmentUrl = `https://${this.bucketName}.s3.amazonaws.com/${user.userId}`
+    // const attachmentUrl = `https://${this.bucketName}.s3.amazonaws.com/${user.userId}`
+    const attachmentUrl = `https://${this.thumbsBucketName}.s3.amazonaws.com/${user.userId}.jpeg`
     const registeredUser = {...user, attachmentUrl}
 
     await this.docClient

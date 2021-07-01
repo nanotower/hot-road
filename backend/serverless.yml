@@ -33,8 +33,8 @@ provider:
     USER_ID_INDEX: userIdIndex
     TOPIC_ID_INDEX: topicIdIndex
     IMAGES_S3_BUCKET: serverless-users-pics-${self:provider.stage}
-    URL_EXPIRES: 500
     THUMBNAILS_S3_BUCKET: serverless-users-thumbs-${self:provider.stage}
+    URL_EXPIRES: 500
 
   iamRoleStatements:
       - Effect: "Allow"
@@ -550,6 +550,36 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:provider.environment.THUMBNAILS_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 10000
+
+    ThumbsBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 
+                - s3:PutObject
+                - s3:GetObject
+              Resource: 'arn:aws:s3:::${self:provider.environment.THUMBNAILS_S3_BUCKET}/*'
+        Bucket: !Ref ThumbnailsBucket
 
     ImagesTopic:
       Type: AWS::SNS::Topic
