@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Route, Router, Switch } from 'react-router-dom';
 import { Grid, Menu, Segment, Header } from 'semantic-ui-react';
 import styles from './App.module.css';
@@ -10,11 +10,28 @@ import TopicComments from './components/TopicComments/TopicComments';
 import UserBox from './components/UserBox/UserBox';
 import UserProfile from './components/UserProfile/UserProfile';
 
+// import { w3cwebsocket as W3CWebSocket } from 'websocket';
+// import { wsEndpoint } from './config';
+
 
 const App = (props) => {
   const [userState, setUserState] = useState({});
   const [topic, setTopic] = useState({});
   const appProps = { props };
+  // const client = useRef(new W3CWebSocket(wsEndpoint));
+
+
+
+  useEffect(() => {
+    if(props.auth.getWs())
+    props.auth.getWs().onopen = () => {
+      console.log('WebSocket Client Connected');
+    };
+    return () => props.auth.getWs().close();
+    // client.current.onmessage = (message) => {
+    //   console.log(message);
+    // };
+  }, [])
 
   const handleLogin = () => {
     props.auth.login();

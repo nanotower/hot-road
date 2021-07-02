@@ -7,7 +7,7 @@ export default class ApiGatewayWs extends WsClient {
   constructor() {
     super()
   }
-  async postToConnection(sendTo: string, message: string) {
+  async postToConnection(sendTo: string, message: object) {
       logger.info('postToConnection', {sendTo, message})
       await this.apigwManagementApi
         .postToConnection({ ConnectionId: sendTo, Data: message })

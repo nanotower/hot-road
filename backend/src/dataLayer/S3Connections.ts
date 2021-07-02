@@ -10,8 +10,8 @@ export class S3Connections extends DbClient {
     super();
   }
 
-  async getConnections(s3ObjectKey: string) {
-    logger.info('Processing S3 item with key', { s3ObjectKey });
+  async getConnections() {
+    logger.info('getConnections');
 
     const connections = await this.docClient
       .scan({
@@ -19,7 +19,7 @@ export class S3Connections extends DbClient {
       })
       .promise();
 
-    return connections;
+    return connections.Items;
   }
 
   async getConnection(userId: string) {

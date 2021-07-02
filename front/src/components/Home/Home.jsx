@@ -9,17 +9,26 @@ import Topic from './components/Topic';
 import { getTopics } from '../../api/forumApi';
 import CreateTopic from '../CreateTopic';
 
+
 const Home = (props) => {
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
+  // const client = useRef(null);
 
   useEffect(() => {
     try {
       fetchTopics();
+      if(props.auth.getWs())
+      props.auth.getWs().onmessage = (message) => {
+        if(message.data === 'newTopic'){
+          fetchTopics();
+        }
+      };
     } catch (error) {
       alert(`Failed to fetch topics: ${error.message}`);
     }
   }, []);
+
 
   const fetchTopics = async () => {
     const topics = await getTopics(props.auth.getIdToken());
@@ -40,7 +49,7 @@ const Home = (props) => {
     ) : (
       <div className={styles.topics}>
         <Grid padded className={styles.grid}>
-          <CreateTopic auth={props.auth} fetchTopics={fetchTopics} setLoading={setLoading} />
+          <CreateTopic auth={props.auth} fetchTopics={fetchTopics} setLoading={setLoading}/>
           {topics.map((topic, pos) => (
             <Topic
               topic={topic}

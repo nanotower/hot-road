@@ -16,7 +16,9 @@ const CreateTopic = ({auth, fetchTopics, setLoading}) => {
         title: topicName,
       })
       fetchTopics();
-    } catch {
+      auth.getWs().send(JSON.stringify({action: "updateTopics", message: "hey", type: "contentchange", data: "newTopic"}))
+    } catch (e) {
+      console.log(e);
       alert('Topic creation failed')
     }
   }

@@ -3,10 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getUploadUrl, uploadFile, registerUser } from '../../api/forumApi';
 import styles from './Register.module.css';
 import { Button, Image, Form } from 'semantic-ui-react';
-import { w3cwebsocket as W3CWebSocket } from 'websocket';
-import { wsEndpoint } from '../../config';
 
-const client = new W3CWebSocket(wsEndpoint);
 
 const Register = ({ setUserState, auth, userState, history }) => {
   const [userName, setUserName] = useState('');
@@ -17,27 +14,7 @@ const Register = ({ setUserState, auth, userState, history }) => {
       file: undefined,
       uploadState: 'NoUpload',
     });
-  // const client = useRef(null);
 
-
-  useEffect(() => {
-    console.log('eff');
-    // client.current = new W3CWebSocket(wsEndpoint);
-    client.onopen = (x) => {
-      console.log('WebSocket Client Connected', x);
-    };
-    client.onmessage = (message) => {
-      console.log(message);
-      console.log(userState);
-
-      setUserPic(userState.attachmentUrl);
-      // client.close();
-
-      // setTimeout(() => {
-      //   history.push('/');
-      // }, 3000);
-    };
-  }, []);
 
   const handleChange = (event) => {
     setUserName(event.target.value);
@@ -78,7 +55,15 @@ const Register = ({ setUserState, auth, userState, history }) => {
       setUploadState('UploadingFile');
       await uploadFile(uploadUrl, userFile.file);
 
-      alert('File was uploaded!');
+      setTimeout(() => {
+        setUserPic(userState.attachmentUrl);
+        alert('File was uploaded!');
+      }, 1000);
+
+      setTimeout(() => {
+        history.push('/');
+      }, 3000);
+
     } catch (e) {
       alert('Could not upload a file: ' + e.message);
     } finally {

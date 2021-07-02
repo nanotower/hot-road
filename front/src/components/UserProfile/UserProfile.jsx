@@ -36,6 +36,7 @@ const UserProfile = ({ auth, user }) => {
     setloading(true);
     await deleteTopic(auth.getIdToken(), topicId);
     getDbUserTopics();
+    getUserInDb();
   };
 
   const handleNameTopicSubmit = async (topicId, topicTitle) => {
