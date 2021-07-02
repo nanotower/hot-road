@@ -30,21 +30,19 @@ export const processImage = async (record: S3EventRecord) => {
 
 export const processS3Event = async (s3Event: S3Event) => {
   for (const record of s3Event.Records) {
-    const key = record.s3.object.key;
+    const key = record.s3.object.key
     const userId = key.split('.')[0]
-    logger.info('Processing S3 event with key', { key, userId });
+    logger.info('Processing S3 event with key', { key, userId })
 
     const connection = await s3Connections.getConnection(userId)
     logger.info('connection', { connection })
 
     const payload = {
-      userId: key,
-    };
+      key,
+    }
 
-    if (userId.length)
-
-    for (const connection of connections.Items) {
-      const connectionId = connection.id
+    if (userId.length) {
+      const connectionId = connection[0].id
       await sendMessageToClient(connectionId, payload)
     }
   }

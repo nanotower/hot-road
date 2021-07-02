@@ -1,6 +1,8 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import 'source-map-support/register'
 import { saveConnection } from '../../businessLogic/WSConnections'
+// import { sendMessageToClient } from '../../businessLogic/WSConnections'
+
 import { createLogger } from '../../utils/logger'
 const logger = createLogger('connectLambda')
 
@@ -16,7 +18,11 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   }
 
   logger.info('Storing item', {item})
-  await saveConnection(item)
+  try {
+    await saveConnection(item)
+  } catch (error) {
+    logger.error(error)
+  }
 
   return {
     statusCode: 200,

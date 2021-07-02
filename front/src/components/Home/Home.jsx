@@ -29,7 +29,6 @@ const Home = (props) => {
 
   const topicsList = () => {
     const onTopicButtonClick = (topic) => {
-      console.log(topic);
       props.setTopic(topic);
       props.history.push(`/topic/${topic.topicId}`);
     };

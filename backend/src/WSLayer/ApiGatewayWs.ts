@@ -1,7 +1,6 @@
 import WsClient from './WsClient'
 
 import { createLogger } from '../utils/logger'
-// import { String } from 'aws-sdk/clients/appstream'
 const logger = createLogger('ApiGatewayWs');
 
 export default class ApiGatewayWs extends WsClient {

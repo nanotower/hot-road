@@ -26,16 +26,13 @@ export class S3Connections extends DbClient {
     logger.info('Processing S3 item with key', { userId });
 
     const connection = await this.docClient
-      .query({
+      .get({
         TableName: this.connectionsTable,
-        KeyConditionExpression: 'userId = :userId',
-        ExpressionAttributeValues: {
-          ':userId': userId
-        }
+        Key: {id:userId}
       })
       .promise();
 
-    return connection.Items;
+    return connection.Item;
   }
 
   async deleteConnection(connectionId: string) {

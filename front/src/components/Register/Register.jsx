@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { getUploadUrl, uploadFile, registerUser } from '../../api/forumApi';
 import styles from './Register.module.css';
@@ -6,30 +6,36 @@ import { Button, Image, Form } from 'semantic-ui-react';
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import { wsEndpoint } from '../../config';
 
-
+const client = new W3CWebSocket(wsEndpoint);
 
 const Register = ({ setUserState, auth, userState, history }) => {
   const [userName, setUserName] = useState('');
   const [userPic, setUserPic] = useState(
     'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/271deea8-e28c-41a3-aaf5-2913f5f48be6/de7834s-6515bd40-8b2c-4dc6-a843-5ac1a95a8b55.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzI3MWRlZWE4LWUyOGMtNDFhMy1hYWY1LTI5MTNmNWY0OGJlNlwvZGU3ODM0cy02NTE1YmQ0MC04YjJjLTRkYzYtYTg0My01YWMxYTk1YThiNTUuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.BopkDn1ptIwbmcKHdAOlYHyAOOACXW0Zfgbs0-6BY-E'
-  );
-  const [userFile, setUserFile] = useState({
-    file: undefined,
-    uploadState: 'NoUpload',
-  });
-  const client = new W3CWebSocket(wsEndpoint);
+    );
+    const [userFile, setUserFile] = useState({
+      file: undefined,
+      uploadState: 'NoUpload',
+    });
+  // const client = useRef(null);
+
 
   useEffect(() => {
-    client.onopen = () => {
-      console.log('WebSocket Client Connected');
+    console.log('eff');
+    // client.current = new W3CWebSocket(wsEndpoint);
+    client.onopen = (x) => {
+      console.log('WebSocket Client Connected', x);
     };
     client.onmessage = (message) => {
       console.log(message);
       console.log(userState);
+
       setUserPic(userState.attachmentUrl);
-    };
-    return () => {
-      client.close();
+      // client.close();
+
+      // setTimeout(() => {
+      //   history.push('/');
+      // }, 3000);
     };
   }, []);
 
@@ -73,9 +79,6 @@ const Register = ({ setUserState, auth, userState, history }) => {
       await uploadFile(uploadUrl, userFile.file);
 
       alert('File was uploaded!');
-      setTimeout(() => {
-        history.push('/');
-      }, 3500);
     } catch (e) {
       alert('Could not upload a file: ' + e.message);
     } finally {
