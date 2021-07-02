@@ -7,7 +7,7 @@ const XAWS = AWSXRay.captureAWS(AWS)
 export default class DbClient {
     constructor(
       protected readonly docClient: DocumentClient = createDynamoDBClient(),
-      protected readonly testVal: string = 'testString',
+      // protected readonly testVal: string = 'testString',
     ) {}
 }
 

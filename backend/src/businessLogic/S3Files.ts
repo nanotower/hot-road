@@ -31,13 +31,17 @@ export const processImage = async (record: S3EventRecord) => {
 export const processS3Event = async (s3Event: S3Event) => {
   for (const record of s3Event.Records) {
     const key = record.s3.object.key;
-    logger.info('Processing S3 item with key', { key });
+    const userId = key.split('.')[0]
+    logger.info('Processing S3 event with key', { key, userId });
 
-    const connections = await s3Connections.getConnections(key);
+    const connection = await s3Connections.getConnection(userId)
+    logger.info('connection', { connection })
 
     const payload = {
-      imageId: key,
+      userId: key,
     };
+
+    if (userId.length)
 
     for (const connection of connections.Items) {
       const connectionId = connection.id
@@ -51,7 +55,7 @@ const sendMessageToClient = async (connectionId, payload) => {
     logger.info('Sending message to a connection', {connectionId})
     await message.sendMessageToClient(connectionId, payload)
   } catch (e) {
-    logger.error('Failed to send message', {error: JSON.stringify(e)})
+    logger.error('Failed to send message', {e})
     if (e.statusCode === 410) {
       logger.error('Stale connection')
       await s3Connections.deleteConnection(connectionId)

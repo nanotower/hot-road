@@ -10,12 +10,12 @@ export class Message {
   constructor(
     private readonly apiGateway = new XAWS.ApiGatewayManagementApi({
       apiVersion: '2018-11-29',
-      endpoint: `${process.env.API_ID}.execute-api.us-east-1.amazonaws.com/${process.env.STAGE}`,
+      endpoint: `${process.env.API_ID}.execute-api.us-east-2.amazonaws.com/${process.env.STAGE}`,
     })
   ) {}
 
   async sendMessageToClient(connectionId, payload) {
-    logger.info('Sending message to a connection', { connectionId });
+    logger.info('Sending message to a connection', { connectionId, payload });
 
     await this.apiGateway
       .postToConnection({
