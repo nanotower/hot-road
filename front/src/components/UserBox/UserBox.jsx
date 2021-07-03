@@ -7,7 +7,7 @@ const UserBox = ({ user, history }) => {
     <div className={styles.user}>
       <span className={styles.username}>{user.userName}</span>
       <Image src={user.attachmentUrl} avatar />
-      <Button icon color="blue" content="focus" onClick={() => history.replace('/profile')}>
+      <Button icon color="blue" onClick={() => history.replace('/profile')}>
         <Icon name="pencil" />
       </Button>
     </div>

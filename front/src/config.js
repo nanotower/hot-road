@@ -1,5 +1,5 @@
-const apiId = '0150j6hay2';
-const wsId = '1g8tb0196h';
+const apiId = 'yj4127oqql';
+const wsId = '7r846t4wk5';
 export const apiEndpoint = `https://${apiId}.execute-api.us-east-2.amazonaws.com/dev`;
 export const wsEndpoint = `wss://${wsId}.execute-api.us-east-2.amazonaws.com/dev`;
 
