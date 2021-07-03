@@ -30,7 +30,7 @@
 ## 🧐 About <a name = "about"></a>
 
 This is my capstone project of cloud developer nanodegree at Udacity.
-As a user, you can register to the app with a nickname and a picture, and then post any topic that you want to discuss or add a comment to an existing one. Inside each topic, you can see a list of relative comments and who had posted it.
+As a user, you can register to the app with a nickname and a picture, and then post any topic that you want to discuss or add a comment to an existing one. Inside each topic, you can see a list of relative comments and who has posted it.
 In the users area, topics can be deleted or renamed.
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
@@ -39,7 +39,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-You need to install first [node js](https://nodejs.org/en/), [serverless](https://www.serverless.com/) and [AWS cli](https://aws.amazon.com/en/cli/). You will need also an AWS account.
+First, you need to install  [node js](https://nodejs.org/en/), [serverless](https://www.serverless.com/) and [AWS cli](https://aws.amazon.com/en/cli/). You will also need an AWS account.
 
 ### Installing
 
@@ -49,7 +49,7 @@ sls deploy -v
 ```
 Copy the https id and ws id in the given output to /front/config.js. This will connect frontend client with the services deployed in AWS.
 
-For the frontend part, you need to install first the list of dependencies.
+For the frontend part, you need to install the list of dependenciesv first.
 ```
 cd front
 npm i
@@ -62,8 +62,8 @@ npm run start
 ## 🎈 Description <a name="description"></a>
 
 There are 4 dbs: users, topics, comments and connections.
-When a user upload a profile picture, S3 saves it and notify by SNS message to a resize function that scales down the picture.
-When a new topic is created, it send a ws message that tells every connected users that they have to update their topics list, so the new one can be seen.
+When a user uploads a profile picture, S3 saves it and notifies by SNS message to a resize function that scales down the picture.
+When a new topic is created, it sends a ws message that tells every connected users that they have to update their topics list, so the new one can be seen.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
