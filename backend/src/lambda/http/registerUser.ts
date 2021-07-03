@@ -5,19 +5,21 @@ import { registerUser } from '../../businessLogic/Users'
 import { getUserId } from '../../utils/getUserId'
 import { NewUserRequest } from '../../interfaces/NewUserRequest'
 
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('registerUser');
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  console.log('Processing event registerUser: ', event)
+  logger.info('Processing event registerUser: ', event)
 
   const userId = getUserId(event)
   const newUserRequest: NewUserRequest = JSON.parse(event.body)
-  console.log('result: ', userId, newUserRequest)
+  logger.info('result: ', userId, newUserRequest)
 
   let newUser: any
   try {
     newUser = await registerUser(userId, newUserRequest)
   } catch (error) {
-    console.error(error)
+    logger.error(error)
   }
 
   return {

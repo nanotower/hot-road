@@ -1,30 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Button,
-  Divider,
-  Grid,
-  Header,
-  Icon,
-  Input,
-  Image,
-  Loader,
-} from 'semantic-ui-react';
+import { Grid, Header, Loader } from 'semantic-ui-react';
 import styles from './Home.module.css';
-import Topic from '../Topic/Topic';
+import Topic from './components/Topic';
 import { getTopics } from '../../api/forumApi';
-import CreateTopic from '../CreateTopic/CreateTopic';
+import CreateTopic from '../CreateTopic';
+
 
 const Home = (props) => {
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
+  // const client = useRef(null);
 
   useEffect(() => {
     try {
       fetchTopics();
+      if (props.auth.getWs())
+        props.auth.getWs().onmessage = (message) => {
+          if (message.data === 'newTopic') {
+            fetchTopics();
+          }
+        };
     } catch (error) {
       alert(`Failed to fetch topics: ${error.message}`);
     }
-  }, []);
+  }, [props.auth]);
 
   const fetchTopics = async () => {
     const topics = await getTopics(props.auth.getIdToken());
@@ -34,7 +33,6 @@ const Home = (props) => {
 
   const topicsList = () => {
     const onTopicButtonClick = (topic) => {
-      console.log(topic);
       props.setTopic(topic);
       props.history.push(`/topic/${topic.topicId}`);
     };
@@ -46,26 +44,21 @@ const Home = (props) => {
     ) : (
       <div className={styles.topics}>
         <Grid padded className={styles.grid}>
-          <CreateTopic auth={props.auth} fetchTopics={fetchTopics} setLoading={setLoading} />
+          <CreateTopic auth={props.auth} fetchTopics={fetchTopics} setLoading={setLoading}/>
           {topics.map((topic, pos) => (
-            <Topic
-              topic={topic}
-              pos={pos}
-              history={props.history}
-              onTopicButtonClick={onTopicButtonClick}
-            />
+            <React.Fragment key={topic.topicId}>
+              <Topic
+                topic={topic}
+                pos={pos}
+                history={props.history}
+                onTopicButtonClick={onTopicButtonClick}
+              />
+            </React.Fragment>
           ))}
         </Grid>
       </div>
     );
   };
-
-  // const userBox = () => (
-  //   <div className={styles.user}>
-  //     <Image src={user.attachmentUrl} avatar />
-  //     <span>{user.userName}</span>
-  //   </div>
-  // );
 
   return (
     <div className={styles.home}>

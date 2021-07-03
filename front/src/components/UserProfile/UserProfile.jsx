@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { deleteTopic, getUserTopics } from '../../api/forumApi';
 
 import { updateTopicName, getUser } from '../../api/forumApi';
-import TopicEdit from './TopicEdit';
+import TopicEdit from './components/TopicEdit';
 import { Grid, Loader, Image } from 'semantic-ui-react';
 import styles from './UserProfile.module.css';
 
@@ -36,6 +36,7 @@ const UserProfile = ({ auth, user }) => {
     setloading(true);
     await deleteTopic(auth.getIdToken(), topicId);
     getDbUserTopics();
+    getUserInDb();
   };
 
   const handleNameTopicSubmit = async (topicId, topicTitle) => {

@@ -22,7 +22,7 @@ export const handler: APIGatewayProxyHandler = async (
 
   try {
     deletedItem = await deleteTopic(topicInRequest);
-    // TODO remove comments of table
+
     updatedUser = await adjustUsersTopic(userId, 'substractComment');
     logger.info('updatedUser', { deletedItem, updatedUser });
   } catch (error) {

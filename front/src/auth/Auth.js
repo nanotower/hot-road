@@ -1,6 +1,8 @@
 import auth0 from 'auth0-js';
 import { authConfig } from '../config';
 import { getUser } from '../api/forumApi';
+import { w3cwebsocket as W3CWebSocket } from 'websocket';
+import { wsEndpoint } from '../config';
 
 export default class Auth {
   accessToken;
@@ -61,6 +63,14 @@ export default class Auth {
     this.userRegistered = user;
   }
 
+  setWs(ws) {
+    this.ws = ws;
+  }
+
+  getWs() {
+    return this.ws || undefined;
+  }
+
   async setSession(authResult) {
     // Set isLoggedIn flag in localStorage
     localStorage.setItem('isLoggedIn', 'true');
@@ -73,6 +83,7 @@ export default class Auth {
 
     const userRegistered = await getUser(this.idToken);
     this.setUser(userRegistered);
+    this.setWs(new W3CWebSocket(wsEndpoint));
 
     if (!this.userRegistered) {
       this.history.replace('/register');
@@ -80,7 +91,6 @@ export default class Auth {
     } else {
       this.history.replace('/');
     }
-    // this.history.replace('/');
   }
 
   renewSession() {

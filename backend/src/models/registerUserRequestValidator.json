@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "serverless-forum-app",
+    "type": "object",
+    "properties": {
+      "userName": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "userName"
+    ],
+    "additionalProperties": false
+  }

@@ -13,7 +13,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   const topicId = event.pathParameters.topicId
   const updatedTopic: NewUpdateRequest = JSON.parse(event.body)
   const userId = getUserId(event)
-  const res = await updateTopic(updatedTopic, userId, topicId)
+  await updateTopic(updatedTopic, userId, topicId)
 
   return {
     statusCode: 204,
@@ -22,7 +22,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       'Access-Control-Allow-Credentials': true
     },
     body: JSON.stringify({
-      items: res
+      items: 'modified'
     })
   }
 }
