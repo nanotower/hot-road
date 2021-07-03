@@ -34,7 +34,7 @@ export const sendMessageToClients = async (connections, payload) => {
       await apiGatewayWs.postToConnection(id, payload);
     } catch (e) {
       if (e.statusCode === 410) {
-        console.log(`Found stale connection, deleting ${id}`);
+        logger.warning(`Found stale connection, deleting ${id}`);
         await s3Connections.deleteConnection(id);
       } else {
         throw e;

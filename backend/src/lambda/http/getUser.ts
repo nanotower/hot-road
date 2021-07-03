@@ -14,7 +14,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   let userInDb: any
   try {
     userInDb = await getUser(userId)
-    console.log('result: ', userId, userInDb) 
+    logger.info('result', {userId, userInDb}) 
   } catch (error) {
     console.error(error)
   }
