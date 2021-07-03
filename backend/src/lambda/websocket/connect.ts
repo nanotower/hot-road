@@ -1,7 +1,6 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import 'source-map-support/register'
 import { saveConnection } from '../../businessLogic/WSConnections'
-// import { sendMessageToClient } from '../../businessLogic/WSConnections'
 
 import { createLogger } from '../../utils/logger'
 const logger = createLogger('connectLambda')

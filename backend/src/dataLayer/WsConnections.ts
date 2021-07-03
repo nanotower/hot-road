@@ -3,7 +3,7 @@ import DbClient from './DbClient';
 import { createLogger } from '../utils/logger';
 const logger = createLogger('Topics-Data');
 
-export class S3Connections extends DbClient {
+export class WsConnections extends DbClient {
   constructor(
     private readonly connectionsTable = process.env.CONNECTIONS_TABLE
   ) {

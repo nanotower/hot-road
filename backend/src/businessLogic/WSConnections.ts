@@ -1,27 +1,27 @@
-import { S3Connections } from '../dataLayer/s3Connections';
+import { WsConnections } from '../dataLayer/WsConnections';
 import ApiGatewayWs from '../WSLayer/ApiGatewayWs';
 
-const s3Connections = new S3Connections();
+const wsConnections = new WsConnections();
 const apiGatewayWs = new ApiGatewayWs();
 
 import { createLogger } from '../utils/logger';
-const logger = createLogger('WSConnections');
+const logger = createLogger('WSConnections-logic');
 
 export const saveConnection = async (item: object) => {
   logger.info('saving connection', { item });
-  await s3Connections.saveConnection(item);
+  await wsConnections.saveConnection(item);
 };
 
 export const deleteConnection = async (connectionId) => {
   logger.info('deleting connection', { connectionId });
-  await s3Connections.deleteConnection(connectionId.id);
+  await wsConnections.deleteConnection(connectionId.id);
 };
 
 
 export const getUsersConnected = async () => {
   logger.info('Getting all users connected');
 
-  const connections = await s3Connections.getConnections();
+  const connections = await wsConnections.getConnections();
   logger.info('connections', { connections });
 
   return connections;
@@ -35,7 +35,7 @@ export const sendMessageToClients = async (connections, payload) => {
     } catch (e) {
       if (e.statusCode === 410) {
         logger.warning(`Found stale connection, deleting ${id}`);
-        await s3Connections.deleteConnection(id);
+        await wsConnections.deleteConnection(id);
       } else {
         throw e;
       }
@@ -51,14 +51,4 @@ export const sendMessageToClients = async (connections, payload) => {
   }
 
   return { statusCode: 200, body: 'Data sent.' };
-
-  // try {
-  //   await message.sendMessageToClient(connectionId, payload)
-  // } catch (e) {
-  //   logger.error('Failed to send message', {e})
-  //   if (e.statusCode === 410) {
-  //     logger.error('Stale connection')
-  //     await s3Connections.deleteConnection(connectionId)
-  //   }
-  // }
 };
