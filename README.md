@@ -27,6 +27,21 @@
 - [Description](#description)
 - [Built Using](#built_using)
 
+## ⛏️ Built Using <a name = "built_using"></a>
+
+Technologies and features
+
+- [Serverless](https://www.serverless.com/) - Serverless deployment
+- [React js](https://reactjs.org/) - Web Framework
+- AWS lambda
+- AWS DynamoDB
+- AWS API gateway
+- AWS SNS
+- AWS X-RAY
+- AWS S3
+- Auth0
+- Ws and HTTPS communications
+
 ## 🧐 About <a name = "about"></a>
 
 This is my capstone project of cloud developer nanodegree at Udacity.
@@ -65,17 +80,3 @@ There are 4 dbs: users, topics, comments and connections.
 When a user uploads a profile picture, S3 saves it and notifies by SNS message to a resize function that scales down the picture.
 When a new topic is created, it sends a ws message that tells every connected users that they have to update their topics list, so the new one can be seen.
 
-## ⛏️ Built Using <a name = "built_using"></a>
-
-Technologies and features
-
-- [Serverless](https://www.serverless.com/) - Serverless deployment
-- [React js](https://reactjs.org/) - Web Framework
-- AWS lambda
-- AWS DynamoDB
-- AWS API gateway
-- AWS SNS
-- AWS X-RAY
-- AWS S3
-- Auth0
-- Ws and HTTPS communications
